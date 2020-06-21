@@ -1,9 +1,10 @@
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-
+#define GLFW_EXPOSE_NATIVE_WIN32
 #include "stb_image_write.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -11,11 +12,13 @@
 #include "shader_m.h"
 #include "camera.h"
 #include "model.h"
+#include <windows.h>
 #include "quad.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include <iostream>
+#include "Lights.h"
 #include "Objects.h"
 #include "LineRenderer.h"
 #include <GLFW\glfw3native.h>
@@ -23,9 +26,10 @@
 using namespace glm;
 #include "Scene.h"
 #include "Events.h"
-
 #include "Action.h"
 #include "Gui.h"
+
+
 
 bool esc = false;
 float mxposition;
@@ -56,9 +60,6 @@ float lastwz = 0;
 bool firstMouse = true;
 
 
-
-
-
 Scene scene;
 
 Shader pickingShader;
@@ -73,6 +74,7 @@ bool ctrl = false;
 static void dropCallback(GLFWwindow* window, int path_count, const char* paths[]) {
 	scene.LoadObject(path_count, paths);
 }
+
 
 int main()
 {
@@ -94,16 +96,14 @@ int main()
 
 	// glfw window creation
 	// --------------------
-	 window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Boolean Game Engine", NULL, NULL);
+	window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Boolean Game Engine", NULL, NULL);
 	glfwSetWindowPos(window, 500, 100);
 	GLFWimage icons[1];
 	int width, height, nrComponents;
  
 	icons[0].pixels = stbi_load("Data/icon_boolean_2.png", &icons[0].width, &icons[0].height, 0, 4);
-	
 	glfwSetWindowIcon(window, 1, icons);
-	
-	 stbi_image_free(icons[0].pixels);
+	stbi_image_free(icons[0].pixels);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -118,8 +118,6 @@ int main()
 	glfwSetKeyCallback(window, keyCallback);
 
 	glfwSetDropCallback(window, dropCallback);
-
-	
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		std::cout << "Failed to initialize GLAD" << std::endl;
@@ -131,7 +129,9 @@ int main()
 
 	pickingShader = Shader("Data/picking.vert", "Data/picking.frag");
 	
-
+	TCHAR szExeFileName[MAX_PATH];
+	GetModuleFileName(NULL, szExeFileName, MAX_PATH);
+	std::cout << szExeFileName << "\n";
 	// load models
 	// -----------
 	//camera.width = SCR_WIDTH;
@@ -207,28 +207,18 @@ int main()
 		}
 		
 	}
-	
 	gui.terminate();
 	glfwTerminate();
 	return 0;
-
-
-
-
 }
 
 void processInput(GLFWwindow* window)
 {
 	//if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		//esc = true;
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera.ProcessKeyboard(FORWARD, deltaTime * speed);
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera.ProcessKeyboard(BACKWARD, deltaTime * speed);
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera.ProcessKeyboard(LEFT, deltaTime * speed);
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera.ProcessKeyboard(RIGHT, deltaTime * speed);
+	float k = 0;
+
+	//	camera.ProcessKeyboard(RIGHT, deltaTime * speed);
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 		shift = true;
 	else
@@ -247,12 +237,14 @@ void framebuffer_size_callback(GLFWwindow* window, int w, int h)
 	// make sure the viewport matches the new window dimensions; note that width and 
 	// height will be significantly larger than specified on retina displays.
 //	glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)w / (float)h, 0.1f, 1000.0f);//projection matrix
+	if(!w<=0){
 	camera.setProjectionMatrix( w,h);
 	//glViewport(0, 0, w, h);
 	width = w;
 	height = h;
 	scene.width = w;
 	scene.height = h;
+	}
 }
 
 // glfw: whenever the mouse moves, this callback is called
@@ -293,12 +285,13 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	myoffset = yoffset*0.7;
 	mxposition = xpos/width;
 	myposition = 1.-(ypos/height);
-	
-	
-	
+
+
+
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 	{
 		if (ImGui::IsAnyItemActive()) {
+
 			return;
 		}
 		//cout << xpos << "\n";
@@ -328,8 +321,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 		}
 		else {
 
-		
-		camera.ProcessMouseMovement(xoffset , yoffset );
+			camera.ProcessMouseMovement(xoffset , yoffset );
 		}
 	}
 	else {
@@ -367,95 +359,110 @@ void pickObject(void)
 static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	
-	if (action == GLFW_PRESS) {
-		camera.setKeyPositions(key);
-	
-		switch (key)
-		{
-		case GLFW_KEY_ESCAPE:
-			esc = true;
-			//act.ActionClose();
-			break;
-		case GLFW_KEY_A:
-			break;
-		case GLFW_KEY_D:
-			if (shift)
-			{ 
-				scene.DuplicateObject();
-			}
-			break;
-			
-		case GLFW_KEY_G:
-			
-			act.action = Action::Move;
-			break;
-		case GLFW_KEY_ENTER:
-			act.ActionClose();
-			break;
-		case GLFW_KEY_X:
-			act.axis = Action::X;
-			break;
-		case GLFW_KEY_Y:
-			act.axis = Action::Z;
-			break;
-		case GLFW_KEY_Z:
-			act.axis = Action::Y;
-			break;
-		case GLFW_KEY_R:
-			act.action = Action::Rotate;
-			break;
-		case GLFW_KEY_0:
-			act.addNumbers("0");
-			break;
-		case GLFW_KEY_1:
-			act.addNumbers("1");
-			break;
-		case GLFW_KEY_2:
-			act.addNumbers("2");
-			break;
-		case GLFW_KEY_3:
-			act.addNumbers("3");
-			break;
-		case GLFW_KEY_4:
-			act.addNumbers("4");
-			break;
-		case GLFW_KEY_5:
-			act.addNumbers("5");
-			break;
-		case GLFW_KEY_6:
-			act.addNumbers("6");
-			break;
-		case GLFW_KEY_7:
-			act.addNumbers("7");
-			break;
-		case GLFW_KEY_8:
-			act.addNumbers("8");
-			break;
-		case GLFW_KEY_9:
-			act.addNumbers("9");
-			break;
-		case GLFW_KEY_KP_DECIMAL:
-			if (act.action == Action::Nothing) {
-				if(scene.objects.size())
-				camera.setOrigin(scene.objects[scene.selectionIndex].position);
-			}
-			
-			act.addNumbers(".");
-			break;
-		case GLFW_KEY_PERIOD:
-			act.addNumbers(".");
-			break;
-		case GLFW_KEY_KP_5:
-			camera.setOrtho();
-			camera.setProjectionMatrix(width, height);
-			break;
-		
-		case GLFW_KEY_KP_7:
-			//camera.setOrtho();
+	if (!ImGui::IsAnyItemActive()) {
+		std::cout <<shift << "\n";
 
-			//camera.setProjectionMatrix(width, height);
-			break;
+
+
+
+		if (action == GLFW_PRESS) {
+			camera.setKeyPositions(key);
+
+			switch (key)
+			{
+			case GLFW_KEY_ESCAPE:
+				esc = true;
+				//act.ActionClose();
+				break;
+			case GLFW_KEY_A:
+				break;
+			case GLFW_KEY_D:
+				if (shift)
+				{
+					scene.DuplicateObject();
+				}
+				break;
+
+			case GLFW_KEY_G:
+
+				act.action = Action::Move;
+				break;
+			case GLFW_KEY_ENTER:
+				act.ActionClose();
+				break;
+			case GLFW_KEY_X:
+				act.axis = Action::X;
+				break;
+			case GLFW_KEY_Y:
+				act.axis = Action::Z;
+				break;
+			case GLFW_KEY_Z:
+				act.axis = Action::Y;
+				break;
+			case GLFW_KEY_R:
+				act.action = Action::Rotate;
+				break;
+			case GLFW_KEY_0:
+				act.addNumbers("0");
+				break;
+			case GLFW_KEY_1:
+				act.addNumbers("1");
+				break;
+			case GLFW_KEY_2:
+				act.addNumbers("2");
+				break;
+			case GLFW_KEY_3:
+				act.addNumbers("3");
+				break;
+			case GLFW_KEY_4:
+				act.addNumbers("4");
+				break;
+			case GLFW_KEY_5:
+				act.addNumbers("5");
+				break;
+			case GLFW_KEY_6:
+				act.addNumbers("6");
+				break;
+			case GLFW_KEY_7:
+				act.addNumbers("7");
+				break;
+			case GLFW_KEY_8:
+				act.addNumbers("8");
+				break;
+			case GLFW_KEY_9:
+				act.addNumbers("9");
+				break;
+			case GLFW_KEY_KP_DECIMAL:
+				if (act.action == Action::Nothing) {
+					if (scene.objects.size())
+						camera.setOrigin(scene.objects[scene.selectionIndex].position);
+				}
+
+				act.addNumbers(".");
+				break;
+			case GLFW_KEY_PERIOD:
+				act.addNumbers(".");
+				break;
+			case GLFW_KEY_KP_5:
+				camera.setOrtho();
+				camera.setProjectionMatrix(width, height);
+				break;
+
+			case GLFW_KEY_KP_7:
+				//camera.setOrtho();
+
+				//camera.setProjectionMatrix(width, height);
+				break;
+			case GLFW_KEY_SPACE:
+				if (scene.sceneLights.panelStatus) {
+					scene.sceneLights.panelStatus = false;
+				}
+				else {
+					scene.sceneLights.panelStatus = true;
+				}
+
+			}
+
 		}
-		
 	}
 }

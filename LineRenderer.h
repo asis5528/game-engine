@@ -7,7 +7,7 @@ public:
 
 	LineRenderer(glm::vec3 start,glm::vec3 end) {
 		 lineShader = Shader("Data/line.vert", "Data/line.frag");
-		 std::cout << lineShader.ID << "\n";
+		// std::cout << lineShader.ID << "\n";
 		
 		float lineVertices[] = {
 			start.x,start.y,start.z,end.x,end.y,end.z	
