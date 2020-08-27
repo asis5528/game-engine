@@ -31,13 +31,15 @@ public:
 	bool panelStatus = 0;
 	int selectedType = 0;
 	glm::vec3 defaultColors = glm::vec3(0.0);
-	float deafaultStrength = 1.0;
+	glm::vec3 Position = glm::vec3(0.0);
+	float deafaultStrength = 100.0;
 	void addLights( glm::vec3 pos, glm::vec3 col, float lightStrength,Type type = Point) {
 		Profile pro;
 		type = static_cast<Type>(selectedType);
 		pro.type = type;
 		string lightName[3] = {"(Point)","(Directional)" ,"(Spot)" };
-		pro.name = "Light" + std::to_string(lights.size())+"   "+lightName[type];
+		//pro.name = "Light" + std::to_string(lights.size())+"   "+lightName[type];
+		pro.name = "Light" + std::to_string(lights.size());
 		Light  light = Light(pro, pos, col, lightStrength);
 		light.index = lights.size();
 		lights.push_back(light);

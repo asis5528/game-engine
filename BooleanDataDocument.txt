@@ -1,0 +1,13 @@
+Data Management:
+	saving format:
+	NObjects integer  //total size of objects in the scene
+	Nprimitives integer //total size of primitives in the scene
+	#prim   //indication that below data will be the primitives file name
+	......//primitives data
+	.....//primitives data /n till Nprimitives
+	#textures //indication that below data will be the textures path name
+	.....//texture path name
+	.....
+	...
+	#objects //indication that below data will be the objects dataion.y worldPosition.z rot.x rot.y rot.z scale.x scale.y scale.z primitiveIndex(unsigned integer) sizeOftexturelistintheobject objectTexture[0] objectTexture[1]... MaterialModeIndex ObjectColor.r ObjectColor.g ObjectColor.b ObjectColor.a DiffuseTextureIndex 
+	nameOfobject worldPosition.x worldPosit

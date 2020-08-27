@@ -100,7 +100,6 @@ public:
 		width = w;
 		height = h;
 		projMat = glm::perspective(45.f, (float)w / (float)h, 0.1f, 1000.0f);//projection matrix
-	
 		
 		if (ortho) {
 			float ratio = Zoom;
@@ -171,9 +170,12 @@ public:
 		
 		
 		if (Zoom >= 1.0f && Zoom <= 2245.0f)
-			Zoom -= yoffset*zoomSpeed;
-		if (Zoom <= 20.0f)
-			Zoom = 20.0f;
+			if(alt)
+				Zoom -= yoffset*zoomSpeed*0.1;
+			else
+				Zoom -= yoffset * zoomSpeed;
+		if (Zoom <= 1.0f)
+			Zoom = 1.0f;
 		if (Zoom >= 2245.0f)
 			Zoom = 2245.0f;
 		calculatePosition();
@@ -190,8 +192,18 @@ public:
 			
 	}
 
-	void setOrigin(glm::vec3 pos) {
-		
+	void setOrigin(glm::vec3 pos,glm::vec3 dim) {
+		float max = 0.;
+		if (dim.x > max) {
+			max = dim.x;
+			if (dim.y > max) {
+				max = dim.y;
+			}
+			else if (dim.z > max) {
+				max = dim.z;
+			}
+		}
+	//	Zoom = max + 4.;
 		objectTrackPosition = pos;
 		calculatePosition();
 		Position += objectTrackPosition;
@@ -288,9 +300,6 @@ public:
 		// these positions must be in range [-1, 1] (!!!), not [0, width] and [0, height]
 		float mouseX =mx / (width * 0.5f) - 1.0f;
 		float mouseY = my / (height * 0.5f) - 1.0f;
-
-		
-
 		glm::mat4 invVP = glm::inverse(projMat * GetViewMatrix());
 		glm::vec4 screenPos = glm::vec4(mouseX, -mouseY, 1.0f, 1.0f);
 		glm::vec4 worldPos = invVP * screenPos;

@@ -1,12 +1,13 @@
 
+
 class Quad {
+
 public:
 	unsigned int quadVAO, quadVBO;
 	int shaderProgram;
-	Texture tex;
 	std::vector<unsigned int> textures;
 	void init() {
-		Shader quadShader("Data/quad.vert", "Data/quad.frag");
+		Shader quadShader("Data/Shaders/quad.vert", "Data/Shaders/quad.frag");
 		float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
 			  // positions   // texCoords
 			  -1.0f,  1.0f,  0.0f, 1.0f,
@@ -37,6 +38,8 @@ public:
 
 	}
 	void draw(float tim) {
+		glClearColor(0., 0., 0., 1.);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glUseProgram(shaderProgram);
 		glBindVertexArray(quadVAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
 		//glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -48,10 +51,30 @@ public:
 			glUniform1i(glGetUniformLocation(shaderProgram, name.c_str()), i);
 			float k = 1;
 		}
+		
 		glUniform1f(glGetUniformLocation(shaderProgram, "timer"), tim);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glUseProgram(0);
 		// glBindVertexArray(0); // no need to unbind it every time 
+	}
+
+	void drawCustom(unsigned int shader) {
+		glClearColor(0., 0., 0., 1.);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glUseProgram(shader);
+		glBindVertexArray(quadVAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
+		//glDrawArrays(GL_TRIANGLES, 0, 6);
+		for (unsigned int i = 0; i < textures.size(); i++) {
+			glActiveTexture(GL_TEXTURE0 + i);
+			glBindTexture(GL_TEXTURE_2D, textures[i]);
+
+			string name = "tex" + std::to_string(i);
+			glUniform1i(glGetUniformLocation(shader, name.c_str()), i);
+			float k = 1;
+		}
+		//glUniform1f(glGetUniformLocation(shader, "timer"), tim);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glUseProgram(0);
 	}
 	unsigned int LoadTexture(const char* path)
 	{

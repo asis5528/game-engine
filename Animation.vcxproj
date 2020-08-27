@@ -143,15 +143,15 @@
     <ClCompile Include="imgui_impl_glfw.cpp" />
     <ClCompile Include="imgui_impl_opengl3.cpp" />
     <ClCompile Include="imgui_widgets.cpp" />
-    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Action.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="Cube.h" />
+    <ClInclude Include="CubeMapGenerator.h" />
     <ClInclude Include="Events.h" />
     <ClInclude Include="FBO.h" />
-    <ClInclude Include="Grid.h" />
     <ClInclude Include="Gui.h" />
     <ClInclude Include="imconfig.h" />
     <ClInclude Include="imgui.h" />
@@ -161,8 +161,11 @@
     <ClInclude Include="imstb_rectpack.h" />
     <ClInclude Include="imstb_textedit.h" />
     <ClInclude Include="imstb_truetype.h" />
+    <ClInclude Include="IrradianceMapGenerator.h" />
+    <ClInclude Include="Lights.h" />
     <ClInclude Include="LineRenderer.h" />
     <ClInclude Include="Loader.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="Objects.h" />
@@ -173,9 +176,11 @@
     <ClInclude Include="resource3.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneEdit.h" />
+    <ClInclude Include="SceneLoader.h" />
     <ClInclude Include="shader_m.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="stb_image_write.h" />
+    <ClInclude Include="Tools.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc" />
@@ -184,18 +189,33 @@
     <Image Include="bool_icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Data\line.frag" />
-    <None Include="Data\line.vert" />
-    <None Include="Data\object.frag" />
-    <None Include="Data\object.vert" />
-    <None Include="Data\picking.frag" />
-    <None Include="Data\picking.vert" />
-    <None Include="Data\projection.frag" />
-    <None Include="Data\projection.vert" />
-    <None Include="Data\quad.frag" />
-    <None Include="Data\quad.vert" />
-    <None Include="threefrag.frag" />
-    <None Include="threevert.vert" />
+    <None Include="Data\Shaders\bloom1.frag" />
+    <None Include="Data\Shaders\Default.frag" />
+    <None Include="Data\Shaders\Default.vert" />
+    <None Include="Data\Shaders\Hblur.vert" />
+    <None Include="Data\Shaders\irradianceMap.frag" />
+    <None Include="Data\Shaders\line.frag" />
+    <None Include="Data\Shaders\line.vert" />
+    <None Include="Data\Shaders\object.frag" />
+    <None Include="Data\Shaders\object.vert" />
+    <None Include="Data\Shaders\pbr.frag" />
+    <None Include="Data\Shaders\pbr.vert" />
+    <None Include="Data\Shaders\picking.frag" />
+    <None Include="Data\Shaders\picking.vert" />
+    <None Include="Data\Shaders\projection.frag" />
+    <None Include="Data\Shaders\projection.vert" />
+    <None Include="Data\Shaders\quad.frag" />
+    <None Include="Data\Shaders\quad.vert" />
+    <None Include="Data\Shaders\skybox.frag" />
+    <None Include="Data\Shaders\skybox.vert" />
+    <None Include="Data\Shaders\Textured.frag" />
+    <None Include="Data\Shaders\Textured.vert" />
+    <None Include="Data\Shaders\Vblur.vert" />
+    <None Include="outline.frag" />
+    <None Include="outline.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="BooleanDataDocument.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -6,3 +6,4 @@ extern bool esc;
 extern int action_axis;
 extern bool ctrl;
 extern bool shift;
+extern bool alt;

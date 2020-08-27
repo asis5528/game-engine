@@ -10,7 +10,9 @@ public:
 	glm::vec3 currentPosition = glm::vec3(0.);
 	glm::vec3 firstPosition = glm::vec3(0.);
 	glm::vec3 firstRotation = glm::vec3(0.);
+	glm::vec3 firstScale = glm::vec3(0.);
 	float oldAngle = 0.0;
+	float oldDistance = 0.0;
 	string numbers;
 	void init(Scene &scene) {
 		scene = scene;
@@ -31,6 +33,10 @@ public:
 				if (firstAction) {
 					firstRotation = scene.objects[scene.selectionIndex].rotation;
 					firstPosition = scene.objects[scene.selectionIndex].position;
+					firstScale = scene.objects[scene.selectionIndex].scale;
+					float distan = distance(mpos, obPos);
+					//float offset = distan - oldDistance;
+					oldDistance = distan;
 					//currenRotation = scene.objects[scene.selectionIndex].rotation;
 					firstAction = false;
 				}
@@ -119,9 +125,26 @@ public:
 
 					
 				}
+				else if (action == Scale) {
+					if (firstAction) {
+						//firstAction = false;
+						//oldAngle = an;
+					}
+					if (axis == NUL) {
+						glm::vec2 obPos = scene.objects[scene.selectionIndex].screenPos;
+						vec2 mpos = (glm::vec2(mxposition, myposition));
+						float distan = distance(mpos, obPos);
+						float offset = distan - oldDistance;
+						oldDistance = distan;
+						scene.objects[scene.selectionIndex].scale *= 1+offset;
+					
+					}
+
+				}
 				if (esc) {
 					scene.objects[scene.selectionIndex].rotation = firstRotation;
 					scene.objects[scene.selectionIndex].position = firstPosition;
+					scene.objects[scene.selectionIndex].scale = firstScale;
 					ActionClose();
 					esc = false;
 				}

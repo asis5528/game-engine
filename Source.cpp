@@ -19,11 +19,11 @@
 #include "imgui_impl_opengl3.h"
 #include <iostream>
 #include "Lights.h"
-#include "Objects.h"
 #include "LineRenderer.h"
 #include <GLFW\glfw3native.h>
 #include <cmath>
 using namespace glm;
+
 #include "Scene.h"
 #include "Events.h"
 #include "Action.h"
@@ -58,11 +58,9 @@ float lastwx = 0;
 float lastwy = 0;
 float lastwz = 0;
 bool firstMouse = true;
-
+bool WindowActive = true;
 
 Scene scene;
-
-Shader pickingShader;
 Action act;
 float deltaTime = 0.0f;
 float speed = 7.0;
@@ -71,6 +69,7 @@ static int previous = -1;
 Gui gui;
 bool shift = false;
 bool ctrl = false;
+bool alt = false;
 static void dropCallback(GLFWwindow* window, int path_count, const char* paths[]) {
 	scene.LoadObject(path_count, paths);
 }
@@ -86,6 +85,7 @@ int main()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	//glfwWindowHint(GLFW_RESIZABLE, 1);
 	//glfwWindowHint(GLFW_DECORATED, false);
+	glfwWindowHint(GLFW_RESIZABLE, 1);
 	//glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, 1);
 	
 	
@@ -127,7 +127,7 @@ int main()
 	camera.setProjectionMatrix(SCR_WIDTH, SCR_HEIGHT);
 	// configure global opengl state
 
-	pickingShader = Shader("Data/picking.vert", "Data/picking.frag");
+	//pickingShader = Shader("Data/picking.vert", "Data/picking.frag");
 	
 	TCHAR szExeFileName[MAX_PATH];
 	GetModuleFileName(NULL, szExeFileName, MAX_PATH);
@@ -150,6 +150,8 @@ int main()
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 	float kx = 0.;
 	float ky = 0.;
+	map<string, uint> bone;
+	bone["hehe"] = 1;
 	while (!glfwWindowShouldClose(window))
 	{
 		double x1, y1;
@@ -157,22 +159,22 @@ int main()
 		
 
 		if (act.action != Action::Nothing) {
-
-			if (x1 > width) {
+			std::cout << width << " width" << "\n";
+			if (x1 >= scene.width) {
 				glfwSetCursorPos(window, 0, y1);
 				firstMouse = true;
 			}
-			else if (x1 < 0) {
-				glfwSetCursorPos(window, width, y1);
+			else if (x1 <= 0) {
+				glfwSetCursorPos(window, scene.width, y1);
 				firstMouse = true;
 			}
 
-			if (y1 > height) {
+			if (y1 >= scene.height) {
 				glfwSetCursorPos(window, x1, 0);
 				firstMouse = true;
 			}
-			else if (y1 < 0) {
-				glfwSetCursorPos(window, x1, height);
+			else if (y1 <= 0) {
+				glfwSetCursorPos(window, x1, scene.height);
 				firstMouse = true;
 			}
 		}
@@ -193,9 +195,13 @@ int main()
 		float y =0.;
 		//camera.Position.x = sin(glfwGetTime()) *camera.Zoom;
 		//camera.Position.z = cos(glfwGetTime()) * camera.Zoom;
+		if (WindowActive) {
+
+		
 		scene.draw(camera);
 		act.draw(camera);
 		act.runAction(scene);
+		}
 
 		///////////////////////////////////////GUI///////////////////////////////////
 		if (glfwGetTime() > 5. || 1)
@@ -227,6 +233,10 @@ void processInput(GLFWwindow* window)
 		ctrl = true;
 	else
 		ctrl = false;
+	if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
+		alt = true;
+	else
+		alt = false;
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -237,13 +247,23 @@ void framebuffer_size_callback(GLFWwindow* window, int w, int h)
 	// make sure the viewport matches the new window dimensions; note that width and 
 	// height will be significantly larger than specified on retina displays.
 //	glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)w / (float)h, 0.1f, 1000.0f);//projection matrix
-	if(!w<=0){
+	if(!w<=0||!h<=0){
+		WindowActive = true;
 	camera.setProjectionMatrix( w,h);
+	scene.fbo.update(w, h,scene.fbo.num);
+	scene.fbo2.update(w, h,scene.fbo2.num);
+	scene.bloom1.update(w/16, h/16, scene.bloom1.num);
+	scene.bloom2.update(w/8, h/8, scene.bloom2.num);
+	scene.bloom3.update(w/2, h/2, scene.bloom3.num);
+	scene.bloom4.update(w/2, h/2, scene.bloom4.num);
 	//glViewport(0, 0, w, h);
 	width = w;
 	height = h;
 	scene.width = w;
 	scene.height = h;
+	}
+	else {
+		WindowActive = false;
 	}
 }
 
@@ -288,7 +308,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 
 
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS)
 	{
 		if (ImGui::IsAnyItemActive()) {
 
@@ -299,7 +319,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 			glfwSetCursorPos(window, 0, ypos);
 			firstMouse = true;
 		}
-		else if (xpos < 0) {
+		else if (xpos <= 0) {
 			glfwSetCursorPos(window, width, ypos);
 			firstMouse = true;
 		}
@@ -308,7 +328,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 			glfwSetCursorPos(window, xpos, 0);
 			firstMouse = true;
 		}
-		else if (ypos < 0) {
+		else if (ypos <= 0) {
 			glfwSetCursorPos(window, xpos, height);
 			firstMouse = true;
 		}
@@ -334,11 +354,12 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 static void mouseCallback(GLFWwindow* window, int button, int action, int mods)
 {
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-		//cout << "jj";
-		//scene.move = false;
+		
 		act.ActionClose();
-			
-		pickObject();
+		if (!ImGui::IsAnyItemHovered()) {
+
+			pickObject();
+		}
 	}
 }
 
@@ -402,6 +423,9 @@ static void keyCallback(GLFWwindow* window, int key, int scancode, int action, i
 			case GLFW_KEY_R:
 				act.action = Action::Rotate;
 				break;
+			case GLFW_KEY_S:
+				act.action = Action::Scale;
+				break;
 			case GLFW_KEY_0:
 				act.addNumbers("0");
 				break;
@@ -434,8 +458,13 @@ static void keyCallback(GLFWwindow* window, int key, int scancode, int action, i
 				break;
 			case GLFW_KEY_KP_DECIMAL:
 				if (act.action == Action::Nothing) {
+					glm::vec3 scal = scene.objects[scene.selectionIndex].scale;
+					
+					glm::vec3 dim = scene.allPrimitives[scene.objects[scene.selectionIndex].primitiveID].mesh.Dimensions;
+					glm::vec3 fDim = dim * scal;
+					cout << fDim.x << "\n"; cout << fDim.y << "\n"; cout << fDim.z << "\n";
 					if (scene.objects.size())
-						camera.setOrigin(scene.objects[scene.selectionIndex].position);
+						camera.setOrigin(scene.objects[scene.selectionIndex].position, fDim);
 				}
 
 				act.addNumbers(".");
