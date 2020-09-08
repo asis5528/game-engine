@@ -152,6 +152,12 @@
     <ClInclude Include="Tools.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="AnimationData.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationRunner.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc">

@@ -18,7 +18,8 @@ void main()
 	N.z*=0.7;
 
 	FragColor = vec4(vec3(N.z),1.)*objectColor;
-	FragColor = vec4(weight,1.);
+
+	//FragColor = vec4(weight,1.);
 	if(bloom){
 		Color = objectColor;
 		FragColor = objectColor;

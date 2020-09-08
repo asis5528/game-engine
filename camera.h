@@ -131,7 +131,7 @@ public:
 	// Processes input received from a mouse input system. Expects the offset value in both the x and y direction.
 	void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true)
 	{
-		std::cout << x << " " << y << " name\n";
+		//std::cout << x << " " << y << " name\n";
 		cameraVector = normalize(objectTrackPosition - Position);
 		x -= xoffset*0.01;
 		y -= yoffset*0.01;

@@ -112,7 +112,7 @@ void main()
 	vec3 V = normalize(camPos-modelMatPos);
 	vec3 R = reflect(-V,normalize(N));
 
-	vec4 diffuseTexture = texture(DiffuseTexture,TexCoords)+vec4(0.5);
+	vec4 diffuseTexture = texture(DiffuseTexture,TexCoords);
 //	diffuseTexture=vec4(0.2,0.1,1.,1.);
 	float metallic = texture(glossyTexture,TexCoords).r*metalness;
 	float roughnessVal = texture(roughnessTexture, TexCoords).r*roughness;
@@ -176,7 +176,7 @@ void main()
 
 	vec3 d = vec3(1.0);
 	vec3 fi = mix(d,prefilteredColor,1.);
-	vec3 ambient = (kD * diffuse + specular+vec3(fakeSSS))*ao;
+	vec3 ambient = (kD * diffuse + specular+vec3(fakeSSS)*0.0)*ao;
 	 vec3 color = ambient+Lo;
 	 color = color / (color + vec3(1.0));
     //gamma correct

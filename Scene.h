@@ -1,3 +1,6 @@
+#include "AnimationData.h"
+#include "AnimationRunner.h"
+#include "model.h"
 #include "Events.h"
 #include "FBO.h"
 #include "Cube.h"
@@ -8,7 +11,6 @@ struct Primitives
 {
 	Mesh mesh;
 	string name;
-
 };
 struct Texture {
 	string name;
@@ -62,13 +64,13 @@ public:
 	//Material m;
 	Shader skyshader;
 	CubeMapGenerator mapgen;
-
+	Model model;
 
 	
 	Scene(Camera &cam) {
 		ObjectShader = Shader("Data/Shaders/object.vert", "Data/Shaders/object.frag");
 		DefaultShader = Shader("Data/Shaders/Default.vert", "Data/Shaders/Default.frag");
-		TexturedShader  = Shader("Data/Shaders/Textured.vert", "Data/Shaders/Textured.frag");
+		TexturedShader  = Shader("Data/Shaders/Default.vert", "Data/Shaders/Textured.frag");
 		Shader pbr = Shader("Data/Shaders/pbr.vert", "Data/Shaders/pbr.frag");
 		skyshader = Shader("Data/Shaders/skybox.vert", "Data/Shaders/skybox.frag");
 		shads.push_back(DefaultShader);
@@ -78,7 +80,7 @@ public:
 		mapgen.init();
 		cube.init();
 	
-		pickingShader = Shader("Data/Shaders/picking.vert", "Data/Shaders/picking.frag");
+		pickingShader = Shader("Data/Shaders/default.vert", "Data/Shaders/picking.frag");
 		bloom1Shader = Shader("Data/Shaders/Hblur.vert", "Data/Shaders/bloom1.frag");
 		bloom2Shader = Shader("Data/Shaders/Vblur.vert", "Data/Shaders/bloom1.frag");
 		q.init();
@@ -107,26 +109,17 @@ public:
 	
 	void drawObjects(bool blend) {
 		
+		
 		for (Objects& object : objects) {
 			if (object.mat.blending == blend) {
-			
+				
 				object.mat.set(shads, sceneLights, textures, object.textureID,camera);
-				/*
-				object.shader.use();
-				if (object.textureID.size() > 0) {
-					object.shader.setInt("useTexture", 1);
-					int index = object.textureID[0];
-					glActiveTexture(GL_TEXTURE0);
-					glBindTexture(GL_TEXTURE_2D, textures[index].id);
-
-				}
-				else {
-					object.shader.setInt("useTexture", 0);
-				}
-				object.shader.setInt("selected", 0);
-				*/
+				
 				object.mat.start();
 				object.mat.shad->setInt("selected", 0);
+				
+			
+				
 				object.draw(*camera, allPrimitives[object.primitiveID].mesh);
 			}
 		}
@@ -350,7 +343,9 @@ public:
 			{
 				const char* name = fileName.c_str();
 				
-				Model model(path);
+				//Model model(path);
+				model = Model(path);
+				
 				ofstream myfile;
 				Material::Mode m = Material::Default;
 				Material def(m);

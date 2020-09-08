@@ -11,7 +11,8 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "shader_m.h"
 #include "camera.h"
-#include "model.h"
+#include "stb_image.h"
+using namespace std;
 #include <windows.h>
 #include "quad.h"
 #include "imgui.h"
@@ -44,6 +45,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 static void keyCallback(GLFWwindow*, int, int, int, int);
 void pickObject(void);
+void window_focus_callback(GLFWwindow* window, int focused);
 GLFWwindow *window;
 
 // settings
@@ -59,6 +61,7 @@ float lastwy = 0;
 float lastwz = 0;
 bool firstMouse = true;
 bool WindowActive = true;
+bool WindowFocus = true;
 
 Scene scene;
 Action act;
@@ -150,69 +153,72 @@ int main()
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 	float kx = 0.;
 	float ky = 0.;
-	map<string, uint> bone;
-	bone["hehe"] = 1;
+	//map<string, uint> bone;
+	//bone["hehe"] = 1;
 	while (!glfwWindowShouldClose(window))
 	{
-		double x1, y1;
-		glfwGetCursorPos(window, &x1, &y1);
 		
+			double x1, y1;
+			glfwGetCursorPos(window, &x1, &y1);
 
-		if (act.action != Action::Nothing) {
-			std::cout << width << " width" << "\n";
-			if (x1 >= scene.width) {
-				glfwSetCursorPos(window, 0, y1);
-				firstMouse = true;
+			glfwSetWindowFocusCallback(window, window_focus_callback);
+			if (act.action != Action::Nothing) {
+				std::cout << width << " width" << "\n";
+				if (x1 >= scene.width) {
+					glfwSetCursorPos(window, 0, y1);
+					firstMouse = true;
+				}
+				else if (x1 <= 0) {
+					glfwSetCursorPos(window, scene.width, y1);
+					firstMouse = true;
+				}
+
+				if (y1 >= scene.height) {
+					glfwSetCursorPos(window, x1, 0);
+					firstMouse = true;
+				}
+				else if (y1 <= 0) {
+					glfwSetCursorPos(window, x1, scene.height);
+					firstMouse = true;
+				}
 			}
-			else if (x1 <= 0) {
-				glfwSetCursorPos(window, scene.width, y1);
-				firstMouse = true;
+			gui.start();
+			glm::mat4 vertMat(1.0);
+			vertMat = glm::translate(vertMat, glm::vec3(0.0, 1.0, 0.0));
+
+			float currentFrame = glfwGetTime();
+			deltaTime = currentFrame - lastFrame;
+			lastFrame = currentFrame;
+			kx += mxoffset;
+			ky += myoffset;
+			float xx = sin(glfwGetTime());
+			float xy = cos(glfwGetTime());
+
+			processInput(window);
+			float x = glm::sin(glfwGetTime());
+			float y = 0.;
+			//camera.Position.x = sin(glfwGetTime()) *camera.Zoom;
+			//camera.Position.z = cos(glfwGetTime()) * camera.Zoom;
+
+			if (WindowActive && WindowFocus) {
+
+				scene.draw(camera);
+			}
+			act.draw(camera);
+			act.runAction(scene);
+
+			
+			///////////////////////////////////////GUI///////////////////////////////////
+			if (glfwGetTime() > 5. || 1)
+			{
+				gui.draw(scene);
+				gui.render();
+				glfwSwapBuffers(window);
+				glfwPollEvents();
 			}
 
-			if (y1 >= scene.height) {
-				glfwSetCursorPos(window, x1, 0);
-				firstMouse = true;
-			}
-			else if (y1 <= 0) {
-				glfwSetCursorPos(window, x1, scene.height);
-				firstMouse = true;
-			}
-		}
-		gui.start();
-		glm::mat4 vertMat(1.0);
-		vertMat = glm::translate(vertMat, glm::vec3(0.0, 1.0, 0.0));
-
-		float currentFrame = glfwGetTime();
-		deltaTime = currentFrame - lastFrame;
-		lastFrame = currentFrame;
-		kx += mxoffset;
-		ky += myoffset;
-		float xx = sin(glfwGetTime());
-		float xy = cos(glfwGetTime());
-		
-		processInput(window);
-		float x = glm::sin(glfwGetTime());
-		float y =0.;
-		//camera.Position.x = sin(glfwGetTime()) *camera.Zoom;
-		//camera.Position.z = cos(glfwGetTime()) * camera.Zoom;
-		if (WindowActive) {
-
-		
-		scene.draw(camera);
-		act.draw(camera);
-		act.runAction(scene);
-		}
-
-		///////////////////////////////////////GUI///////////////////////////////////
-		if (glfwGetTime() > 5. || 1)
-		{
-			gui.draw(scene);
-			gui.render();
-			glfwSwapBuffers(window);
-			glfwPollEvents();
-		}
-		
 	}
+	
 	gui.terminate();
 	glfwTerminate();
 	return 0;
@@ -375,6 +381,19 @@ void pickObject(void)
 	
 	scene.pickObject();
 
+
+}
+void window_focus_callback(GLFWwindow* window, int focused)
+{
+	if (focused)
+	{
+		WindowFocus = true;// The window gained input focus
+	}
+	else
+	{
+		WindowFocus = false;
+		
+	}
 
 }
 static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)

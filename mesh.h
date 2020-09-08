@@ -27,12 +27,47 @@ struct Vertex {
 	// bitangent
 	glm::vec3 Bitangent;
 	
-	unsigned int boneIndex[4] = { 0,0,0,0 };
-	float boneWeight[4] = { 0.0,0.0,0.0,0.0 };
-	
+
 };
 
+struct BoneInfo
+{
+	glm::mat4 BoneOffset;
+	
 
+	BoneInfo()
+	{
+		BoneOffset = glm::mat4(1.0);
+		
+	}
+};
+
+struct VertexBoneData
+{
+	unsigned int IDs[4] = { 0,0,0,0 };
+	float Weights[4] = { 0.0,0.0,0.0,0.0 };
+
+	VertexBoneData()
+	{
+		Reset();
+	};
+
+	void Reset()
+	{
+		//ZERO_MEM(IDs);
+		//ZERO_MEM(Weights);
+	}
+
+	void AddBoneData(unsigned int BoneID, float Weight) {
+		for (unsigned int  i = 0; i < sizeof(IDs) / sizeof(IDs[0]); i++) {
+			if (Weights[i] == 0.0) {
+				IDs[i] = BoneID;
+				Weights[i] = Weight;
+				return;
+			}
+		}
+	};
+};
 
 
 
@@ -40,8 +75,13 @@ class Mesh {
 public:
 	/*  Mesh Data  */
 	std::vector<Vertex> vertices;
+	std::vector<VertexBoneData> bones;
 	std::string name;
 	std::vector<unsigned int> indices;
+	std::vector <glm::mat4> bonePoseMatrix;
+	std::vector< BoneInfo> boneInfo;
+	AnimationData adata;
+	
 	glm::vec3 MaxBounds;
 	glm::vec3 MinBounds;
 	glm::vec3 Dimensions;
@@ -49,6 +89,9 @@ public:
 
 	/*  Functions  */
 	// constructor
+	Mesh() {
+
+	}
 	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices)
 	{
 		this->vertices = vertices;
@@ -77,13 +120,57 @@ public:
 		// now that we have all the required data, set the vertex buffers and its attribute pointers.
 		setupMesh();
 	}
-	Mesh() {
-
+	void AnimationInit(std::vector<Vertex> vertices, std::vector<unsigned int> indices,std::vector<VertexBoneData> bones) {
+		this->vertices = vertices;
+		this->indices = indices;
+		this->bones = bones;
+		for (auto& v : vertices) {
+			if (v.Position.x > MaxBounds.x) {
+				MaxBounds.x = v.Position.x;
+			}
+			if (v.Position.y > MaxBounds.y) {
+				MaxBounds.y = v.Position.y;
+			}
+			if (v.Position.z > MaxBounds.z) {
+				MaxBounds.z = v.Position.z;
+			}
+			if (v.Position.x < MinBounds.x) {
+				MinBounds.x = v.Position.x;
+			}
+			if (v.Position.y < MinBounds.y) {
+				MinBounds.y = v.Position.y;
+			}
+			if (v.Position.z < MinBounds.z) {
+				MinBounds.z = v.Position.z;
+			}
+		}
+		Dimensions = MaxBounds + abs(MinBounds);
+		if (bones.size() > 0) {
+			hasAnimation = true;
+		}
+		
+		// now that we have all the required data, set the vertex buffers and its attribute pointers.
+		setupMesh();
 	}
 
 	void Draw(Shader shader,bool line  = 0)
 	{
-	
+		AnimationData* data = &adata;
+		glm::mat4 parent(1.0);
+
+
+		data->outMatrices.clear();
+		data->readAnimation(glfwGetTime(), *data, parent);
+		
+		shader.setBool("hasAnimation", hasAnimation);
+		if(hasAnimation){
+			for (int i = 0; i < boneInfo.size(); i++) {
+				string loc = string("boneMat[") + std::to_string(i) + string("]");
+			
+				shader.setMat4(loc, adata.outMatrices[i]);
+				//object.mat.shad->setMat4(loc, allPrimitives[object.primitiveID].mesh.adata.outMatrices[i]);
+			}
+		}
 
 		glBindVertexArray(VAO);
 		if (line) {
@@ -102,14 +189,16 @@ public:
 private:
 	/*  Render data  */
 	unsigned int VBO, EBO;
-
+	bool hasAnimation = false;
 	/*  Functions    */
 	// initializes all the buffer objects/arrays
 	void setupMesh()
 	{
-		// create buffers/arrays
+		unsigned int VBO1;
+		// create buffers arrays
 		glGenVertexArrays(1, &VAO);
 		glGenBuffers(1, &VBO);
+		glGenBuffers(1, &VBO1);
 		glGenBuffers(1, &EBO);
 		glBindVertexArray(VAO);
 		// load data into vertex buffers
@@ -139,13 +228,14 @@ private:
 		// vertex bitangent
 		glEnableVertexAttribArray(4);
 		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
-
-		glEnableVertexAttribArray(5);
-		glVertexAttribIPointer(5, 4, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, boneIndex));
-
-		glEnableVertexAttribArray(6);
-		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, boneWeight));
-
+		if(hasAnimation){
+			glBindBuffer(GL_ARRAY_BUFFER, VBO1);
+			glBufferData(GL_ARRAY_BUFFER, bones.size() * sizeof(VertexBoneData), &bones[0], GL_STATIC_DRAW);
+			glEnableVertexAttribArray(5);
+			glVertexAttribIPointer(5, 4, GL_INT, sizeof(VertexBoneData), (void*)0);
+			glEnableVertexAttribArray(6);
+			glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(VertexBoneData), (void*)16);
+		}
 		glBindVertexArray(0);
 	}
 };
