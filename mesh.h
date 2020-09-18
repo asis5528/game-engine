@@ -32,14 +32,11 @@ struct Vertex {
 
 struct BoneInfo
 {
+	string name;
 	glm::mat4 BoneOffset;
 	
+	
 
-	BoneInfo()
-	{
-		BoneOffset = glm::mat4(1.0);
-		
-	}
 };
 
 struct VertexBoneData
@@ -80,12 +77,13 @@ public:
 	std::vector<unsigned int> indices;
 	std::vector <glm::mat4> bonePoseMatrix;
 	std::vector< BoneInfo> boneInfo;
-	AnimationData adata;
-	
+	Animation animation;
 	glm::vec3 MaxBounds;
 	glm::vec3 MinBounds;
 	glm::vec3 Dimensions;
 	unsigned int VAO;
+	float timer = 0.0;
+	bool animPlay = false;
 
 	/*  Functions  */
 	// constructor
@@ -146,7 +144,7 @@ public:
 		}
 		Dimensions = MaxBounds + abs(MinBounds);
 		if (bones.size() > 0) {
-			hasAnimation = true;
+			this->m_hasBones = true;
 		}
 		
 		// now that we have all the required data, set the vertex buffers and its attribute pointers.
@@ -155,20 +153,45 @@ public:
 
 	void Draw(Shader shader,bool line  = 0)
 	{
-		AnimationData* data = &adata;
+		Animation* data = &animation;
 		glm::mat4 parent(1.0);
 
-
-		data->outMatrices.clear();
-		data->readAnimation(glfwGetTime(), *data, parent);
+		if (animPlay) {
+			timer += 0.01*24*data->actions[data->actionIndex].speed;
+		}
+		float range = data->actions[data->actionIndex].range.y - data->actions[data->actionIndex].range.x;
+		timer = fmod(timer,range);
+		//float animationTime = timer + data->actions[data->actionIndex].range.x;
+		//timer += data->actions[data->actionIndex].range.x;
 		
-		shader.setBool("hasAnimation", hasAnimation);
-		if(hasAnimation){
-			for (int i = 0; i < boneInfo.size(); i++) {
+		data->info.clear();
+		data->readAnimation((timer+ data->actions[data->actionIndex].range.x )/24, data->adata, parent);
+
+		std::vector<glm::mat4> boneMatrices;
+		unsigned int j = 0;
+		for (unsigned int i = 0; i < data->info.size();i++) {
+			if (data->info[i].name != boneInfo[j].name) {
+				//data->info.erase(data->info.begin() + i);
+				
+
+			}
+			else {
+				boneMatrices.push_back(data->info[i].transformedBone);
+				j += 1;
+				if (j > boneInfo.size() - 1) {
+					break;
+				}
+			}
+
+		}
+
+		shader.setBool("hasAnimation", data->adata.childAnimationData.size()>0);
+		if(data->adata.childAnimationData.size() > 0){
+			for (int i = 0; i < boneMatrices.size(); i++) {
 				string loc = string("boneMat[") + std::to_string(i) + string("]");
 			
-				shader.setMat4(loc, adata.outMatrices[i]);
-				//object.mat.shad->setMat4(loc, allPrimitives[object.primitiveID].mesh.adata.outMatrices[i]);
+				shader.setMat4(loc, boneMatrices[i]*boneInfo[i].BoneOffset);
+			
 			}
 		}
 
@@ -185,11 +208,14 @@ public:
 		// always good practice to set everything back to defaults once configured.
 	//	glActiveTexture(GL_TEXTURE0);
 	}
+	bool hasAnimation() {
+		return this->m_hasBones;
+	}
 
 private:
 	/*  Render data  */
 	unsigned int VBO, EBO;
-	bool hasAnimation = false;
+	bool m_hasBones = false;
 	/*  Functions    */
 	// initializes all the buffer objects/arrays
 	void setupMesh()
@@ -228,7 +254,7 @@ private:
 		// vertex bitangent
 		glEnableVertexAttribArray(4);
 		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
-		if(hasAnimation){
+		if(m_hasBones){
 			glBindBuffer(GL_ARRAY_BUFFER, VBO1);
 			glBufferData(GL_ARRAY_BUFFER, bones.size() * sizeof(VertexBoneData), &bones[0], GL_STATIC_DRAW);
 			glEnableVertexAttribArray(5);

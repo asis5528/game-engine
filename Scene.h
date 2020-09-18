@@ -1,5 +1,5 @@
 #include "AnimationData.h"
-#include "AnimationRunner.h"
+#include "Animation.h"
 #include "model.h"
 #include "Events.h"
 #include "FBO.h"
@@ -29,7 +29,9 @@ public:
 	Camera *camera;
 	std::vector<Objects> objects;
 	std::vector<Primitives> allPrimitives;
+	std::vector<AnimationData> adata;
 	std::vector<Texture> textures;
+	
 	std::vector<int> selected;
 	int selectionIndex = 0;
 	int previous = -1;
@@ -71,7 +73,7 @@ public:
 		ObjectShader = Shader("Data/Shaders/object.vert", "Data/Shaders/object.frag");
 		DefaultShader = Shader("Data/Shaders/Default.vert", "Data/Shaders/Default.frag");
 		TexturedShader  = Shader("Data/Shaders/Default.vert", "Data/Shaders/Textured.frag");
-		Shader pbr = Shader("Data/Shaders/pbr.vert", "Data/Shaders/pbr.frag");
+		Shader pbr = Shader("Data/Shaders/Default.vert", "Data/Shaders/pbr.frag");
 		skyshader = Shader("Data/Shaders/skybox.vert", "Data/Shaders/skybox.frag");
 		shads.push_back(DefaultShader);
 		shads.push_back(TexturedShader);

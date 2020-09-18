@@ -113,6 +113,7 @@ void main()
 	vec3 R = reflect(-V,normalize(N));
 
 	vec4 diffuseTexture = texture(DiffuseTexture,TexCoords);
+//	diffuseTexture=vec4(0.2,0.1,1.,1.);
 	float metallic = texture(glossyTexture,TexCoords).r*metalness;
 	float roughnessVal = texture(roughnessTexture, TexCoords).r*roughness;
 	float ao  = texture(AoTexture,TexCoords).r*Ambient;
@@ -121,7 +122,7 @@ void main()
 	}
 	vec3 F0 = vec3(0.04); 
     F0 = mix(F0, diffuseTexture.rgb, metallic);
-
+	float fakeSSS = pow(smoothstep(0.5,1.0,1.0-dot(N,V)),1.25);
 	vec3 Lo = vec3(0.0);
     for(int i = 0; i < LightSize; ++i) 
     {
@@ -175,7 +176,7 @@ void main()
 
 	vec3 d = vec3(1.0);
 	vec3 fi = mix(d,prefilteredColor,1.);
-	vec3 ambient = (kD * diffuse + specular)*ao;
+	vec3 ambient = (kD * diffuse + specular+vec3(fakeSSS)*0.0)*ao;
 	 vec3 color = ambient+Lo;
 	 color = color / (color + vec3(1.0));
     //gamma correct

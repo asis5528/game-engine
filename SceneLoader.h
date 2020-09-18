@@ -13,6 +13,9 @@ public:
 		
 		vector<float> vertices;
 		vector<unsigned int> indices;
+		vector<float> boneDatas;
+		vector<string> boneList;
+		vector<BoneInfo> boneInfo;
 		string line;
 		int state = 0;
 		while (std::getline(iff, line)) {
@@ -52,12 +55,60 @@ public:
 				state = 3;
 
 			}
+			else if (state == 3) {
+				string line2;
+				std::getline(iff, line2);
+				istringstream iss(line2);
+				float boneData;
+				boneData = std::stof(n);
+				boneDatas.push_back(boneData);
+				while (iss >> boneData) {
+					boneDatas.push_back(boneData);
+				}
+
+				state = 4;
+
+			}
+			else if (state == 4) {
+				string line2;
+				std::getline(iff, line2);
+				istringstream iss(line2);
+				string boneName;
+				//boneList.push_back(n);
+				BoneInfo bi;
+				bi.name = n;
+				float matrix[16];
+				for (int i = 0; i < 16; i++) {
+					float value;
+					iss >> value;
+					matrix[i] = value;
+
+				}
+				bi.BoneOffset = glm::make_mat4(matrix);
+				boneInfo.push_back(bi);
+				while (iss >> boneName) {
+					bi.name = boneName;
+					float matrix[16];
+					for (int i = 0; i < 16; i++) {
+						float value;
+						iss >> value;
+						matrix[i] = value;
+
+					}
+					bi.BoneOffset = glm::make_mat4(matrix);
+					boneInfo.push_back(bi);
+
+				}
+
+				float k = 0.1;
+			}
 			if (n == "vertexDatas") {
 				state = 1;
 				
 			}
 		}
 		vector<Vertex> verts;
+		vector<VertexBoneData> bones;
 		for (int i = 0; i < vertices.size() / 8; i++) {
 			Vertex v;
 			v.Position.x = vertices[i * 8 + 0];
@@ -73,10 +124,150 @@ public:
 			verts.push_back(v);
 		}
 
+		for (int i = 0; i < boneDatas.size() / 8; i++) {
+			VertexBoneData bone;
+			bone.IDs[0] = boneDatas[i * 8 + 0];
+			bone.IDs[1] = boneDatas[i * 8 + 1];
+			bone.IDs[2] = boneDatas[i * 8 + 2];
+			bone.IDs[3] = boneDatas[i * 8 + 3];
+			bone.Weights[0]= boneDatas[i * 8 + 4];
+			bone.Weights[1] = boneDatas[i * 8 + 5];
+			bone.Weights[2] = boneDatas[i * 8 + 6];
+			bone.Weights[3] = boneDatas[i * 8 + 7];
+			bones.push_back(bone);
+		}
+
 		float k = 1.;
-		Mesh m = Mesh(verts, indices);
+		//Mesh m = Mesh(verts, indices);
+		Mesh m;
+		m.boneInfo = boneInfo;
+		Animation animation;
+		loadAnimation(path, animation);
+		m.animation = animation;
+		m.animation.initAction();
+		m.AnimationInit(verts, indices, bones);
 		return m;
 
+	}
+	static void loadAnimation(string path,Animation &animation) {
+		string fullname = path + ".anibln";
+		ifstream iff(fullname);
+		string line;
+		//AnimationData adata;
+
+		string parent;
+		string child;
+		//std::getline(iff, line);
+		//iff >> parent; iff >> child;
+		string j;
+		iff >> j;
+		float duration;
+		iff >> duration;
+		float tick;
+		iff >> tick;
+		unsigned int BoneIndex = 0;
+		animation.duration = duration;
+		animation.ticksperSec = tick;
+		unsigned int state = 0;
+		std::vector<std::vector<AnimationTransformation>> AnimationTransformationData;
+		std::vector<AnimationTransformation> AnimT;
+		std::vector<AnimationTransformation>* AT = &AnimT;
+		while (std::getline(iff, line)) {
+			
+				string firstValue;
+				iff >> firstValue;
+				if (firstValue.size() > 0) {
+				
+				if (firstValue.at(0) == '#') {
+					//state = 1;
+					
+					iff >> firstValue;
+					
+					AnimationTransformationData.resize(AnimationTransformationData.size() + 1);
+					AT = &AnimationTransformationData[AnimationTransformationData.size()-1];
+					
+				}
+				if (firstValue == "AnimationTree") {
+					
+					iff >> parent; iff >> child;
+					animation.adata.name = parent;
+					AnimationData childdata;
+					childdata.name = child;
+					childdata.animationTransformation = AnimationTransformationData[BoneIndex];
+					BoneIndex+=1;
+					animation.adata.childAnimationData.push_back(childdata);
+					state = 1;
+					iff >> firstValue;
+				}
+				
+				//if()
+				if (state == 0) {
+
+					AnimationTransformation at;
+					glm::vec3 pos;
+					pos.x = std::stof(firstValue);
+					iff >> pos.y;
+					iff >> pos.z;
+					at.position = pos;
+					glm::vec3 scale;
+					iff >> scale.x;
+					iff >> scale.y;
+					iff >> scale.z;
+					at.scale = scale;
+					glm::quat rot;
+					iff >> rot.w;
+					iff >> rot.x;
+					iff >> rot.y;
+					iff >> rot.z;
+					at.rotation = rot;
+					float time;
+					iff >> time;
+					at.time = time;
+					string line;
+					AT->push_back(at);
+					//iff >> line;
+					//iff >> line;
+					float j = 5;
+
+					
+				}
+				else if (state == 1) {
+					string parent = firstValue;
+					string child;
+					iff >> child;
+					bool node = searchNode(animation.adata, parent, child, AnimationTransformationData[BoneIndex]);
+					//node->animationTransformation = AnimationTransformationData[BoneIndex];
+					BoneIndex += 1;
+					//AnimationData childData;
+					//childData.name = child;
+					//parentdata->childAnimationData.push_back(childdata);
+				//	float n = 1;
+				}
+
+			}
+			
+		
+		}
+		
+		float k = 1.334;
+
+
+	}
+	static bool searchNode(AnimationData& adata, string Parentname,string Childname,std::vector<AnimationTransformation> &ATT) {
+		if (Parentname == adata.name) {
+			AnimationData childData;
+			childData.name = Childname; 
+			childData.animationTransformation = ATT;
+			adata.childAnimationData.push_back(childData);
+			return true;
+
+			
+		}
+		for (int i = 0; i < adata.childAnimationData.size(); i++) {
+			searchNode(adata.childAnimationData[i], Parentname, Childname,ATT);
+		}
+	
+		
 	}
 	static void savePrimitive(vector<Primitives> &allPrimitives,string &path) {
 		std::cout << "haha" << "\n";
@@ -87,17 +278,105 @@ public:
 			myfile.open(finalname);
 			myfile << "Name " << p.name << "\n";
 			myfile << "vertexDatas \n";
-			for (auto& v : p.mesh.vertices) {
+			for (unsigned int i = 0; i < p.mesh.vertices.size(); i++) {
+				Vertex v = p.mesh.vertices[i];
+				
 				myfile << v.Position.x << " " << v.Position.y << " " << v.Position.z << " ";
 				myfile << v.Normal.x << " " << v.Normal.y << " " << v.Normal.z << " ";
 				myfile << v.TexCoords.x << " " << v.TexCoords.y << " ";
+				
 			}
+			
+		
 			myfile << " \n";
 			myfile << "indices \n";
 			for (auto i : p.mesh.indices) {
 				myfile << i << " ";
 			}
-			myfile.close();
+			myfile << " \n";
+			if (p.mesh.hasAnimation()) {
+				myfile << "boneDatas \n";
+				for (unsigned int i = 0; i < p.mesh.vertices.size(); i++) {
+					VertexBoneData vb = p.mesh.bones[i];
+					if (p.mesh.hasAnimation()) {
+						myfile << vb.IDs[0] << " " << vb.IDs[1] << " " << vb.IDs[2] << " " << vb.IDs[3] << " ";
+						myfile << vb.Weights[0] << " " << vb.Weights[1] << " " << vb.Weights[2] << " " << vb.Weights[3] << " ";
+					}
+				}
+				myfile << " \n";
+				
+				
+
+			}
+			//myfile.close();
+			if (p.mesh.animation.adata.childAnimationData.size() > 0) {
+				myfile << "boneList \n";
+				saveBoneListMesh(myfile, p.mesh);
+				myfile.close();
+				ofstream myfile;
+				string finalname = path + "\\" + p.name + ".anibln";
+				std::cout << finalname << "\n";
+				//myfile << "AnimationData" << "\n";
+				
+				myfile.open(finalname);
+				myfile << "Animation ";
+				myfile << p.mesh.animation.duration << " " << p.mesh.animation.ticksperSec << "\n";
+				saveBoneAnimation(myfile, p.mesh.animation.adata);
+				myfile << "AnimationTree" << "\n";
+				//myfile << "hehe";
+				saveBoneTree(myfile, p.mesh.animation.adata);
+				
+				myfile.close();
+			}
+		}
+	}
+
+	static void saveBoneListMesh(ofstream& myfile, Mesh& mesh) {
+	//	if (adata.anim) {
+		//	myfile << adata.name << " ";
+	//	}
+		for (auto& inf : mesh.boneInfo) {
+			myfile << inf.name << " ";
+			const float* pSource = (const float*)glm::value_ptr(inf.BoneOffset);
+			for (unsigned int i = 0; i < 16; i++) {
+				myfile << pSource [i]<< " ";
+			}
+		}
+
+	}
+
+	static void saveBoneTree(ofstream& myfile, AnimationData& adata) {
+		myfile << adata.name;
+		if (adata.name != "") {
+			myfile << " \n";
+		}
+		
+		for (int i = 0; i < adata.childAnimationData.size(); i++) {
+			if (adata.name == "") {
+				myfile << "Armature" << " ";
+			}else{
+			myfile << adata.name<<" ";
+			}
+			saveBoneTree(myfile, adata.childAnimationData[i]);
+		}
+	}
+	static void saveBoneAnimation(ofstream& myfile, AnimationData& adata) {
+		if (adata.name != "") {
+			
+			myfile << "#\n";
+		}
+		for (int i = 0; i < adata.animationTransformation.size(); i++) {
+			myfile << adata.animationTransformation[i].position.x << " " << adata.animationTransformation[i].position.y << " " << adata.animationTransformation[i].position.z << " ";
+			myfile << adata.animationTransformation[i].scale.x << " " << adata.animationTransformation[i].scale.y << " " << adata.animationTransformation[i].scale.z << " ";
+			myfile << adata.animationTransformation[i].rotation.w << " " << adata.animationTransformation[i].rotation.x << " " << adata.animationTransformation[i].rotation.y << " " << adata.animationTransformation[i].rotation.z << " ";
+			myfile << adata.animationTransformation[i].time;
+			myfile << "\n";
+		}
+		
+
+		
+		for (int i = 0; i < adata.childAnimationData.size(); i++) {
+			saveBoneAnimation(myfile, adata.childAnimationData[i]);
 		}
 	}
 	static void loadSceneData(string finalPath, std::vector<Primitives> &allPrimitives, std::vector<Objects> &objects, Lights &sceneLights, Shader &ObjectShader, std::vector<Texture>& textures) {

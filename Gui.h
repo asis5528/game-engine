@@ -383,6 +383,22 @@ public:
 		}
 	
 	}
+	void AnimationActionSelector(Mesh& mesh) {
+		string finalTitle = "choose actions";
+		if (ImGui::BeginCombo(finalTitle.c_str(), mesh.animation.actions[mesh.animation.actionIndex].name.c_str())) {
+			for (int i = 0; i < mesh.animation.actions.size(); i++) {
+				bool is_selected = (mesh.animation.actionIndex == i);
+				if (ImGui::Selectable(mesh.animation.actions[i].name.c_str(), is_selected)) {
+					mesh.animation.actionIndex = i;
+				}
+				if (is_selected) {
+					ImGui::SetItemDefaultFocus();
+				}
+				
+			}
+			ImGui::EndCombo();
+		}
+	}
 
 	void EnvironmentMapGenerator(Scene& scene) {
 		//if(ImGui::BeginCombo("CubeMapGenerator",))
@@ -565,7 +581,29 @@ public:
 				
 				ImGui::EndTabItem();
 			}
+			if (ImGui::BeginTabItem("Animation")) {
+			Mesh *mesh = &scene.allPrimitives[scene.objects[scene.selectionIndex].primitiveID].mesh;
+			float k = 0.0f;
+			float n = 12.0f;
+			//ImGui::DragFloatRange2("AnimationTime", &k, &n, 1.0);
+			AnimationActionSelector(*mesh);
+			if (mesh->animPlay) {
+				if (ImGui::Button("pause")) {
+					mesh->animPlay = false;
+				}
+			}
+			else {
+				if (ImGui::Button("play")) {
+					mesh->animPlay = true;
+				}
 
+			}
+			
+			ImGui::SliderFloat(mesh->animation.actions[mesh->animation.actionIndex].name.c_str(), &mesh->timer,0.0, mesh->animation.actions[mesh->animation.actionIndex].range.y- mesh->animation.actions[mesh->animation.actionIndex].range.x);
+			static float a, b;
+			ImGui::DragFloatRange2("range", &a, &b, 1.0);
+			ImGui::EndTabItem();
+			}
 
 			ImGui::EndTabBar();
 			ImGui::End();

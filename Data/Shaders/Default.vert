@@ -18,7 +18,7 @@ uniform bool hasAnimation;
 void main()
 {
 	normal = mat3(transpose(inverse(model))) *aNormal;
-	//weight = vec3(aBoneIndex.xyz);
+	weight = vec3(aBoneIndex.xyz);
     TexCoords = aTexCoords;    
 	modelMatPos = vec3(model * vec4(aPos, 1.0));
 	viewPos = (view*vec4(aPos,1.));

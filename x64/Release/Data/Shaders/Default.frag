@@ -3,7 +3,7 @@ layout (location = 0) out vec4 FragColor;
 layout (location = 1) out vec4 Color;
 in vec2 TexCoords;
 in vec3 normal;
-
+in vec3 weight;
 uniform bool bloom;
 uniform bool BloomTexture;
 uniform sampler2D GlowTexture;
@@ -18,6 +18,8 @@ void main()
 	N.z*=0.7;
 
 	FragColor = vec4(vec3(N.z),1.)*objectColor;
+
+	//FragColor = vec4(weight,1.);
 	if(bloom){
 		Color = objectColor;
 		FragColor = objectColor;

@@ -176,7 +176,7 @@ private:
 		}
 		const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices);
 		// check for errors
-		float k =  scene->mAnimations[0]->mDuration;
+		//float k =  scene->mAnimations[0]->mDuration;
 		//globalInverseTransform = aiMatrix4x4ToGlm(&scene->mRootNode->mTransformation);
 		//glm::inverse(globalInverseTransform);
 
@@ -188,7 +188,7 @@ private:
 		m_pScene = scene;
 		// retrieve the directory path of the filepath
 		directory = path.substr(0, path.find_last_of('/'));
-		aiAnimation* animation = scene->mAnimations[0];
+		//aiAnimation* animation = scene->mAnimations[0];
 		
 		//for (int i = 0; i < animation->mNumChannels; i++) {
 		//	std::cout << string(animation->mChannels[i]->mNodeName.data) << "\n";
@@ -360,11 +360,11 @@ private:
 				
 				m_BoneInfo[BoneIndex].BoneOffset = aiMatrix4x4ToGlm(&mesh->mBones[i]->mOffsetMatrix);
 
-
-				AnimationData data;
-				animationData.push_back(data);
-				animationData[BoneIndex].name = BoneName;
-				animationData[BoneIndex].boneOffset = aiMatrix4x4ToGlm(&mesh->mBones[i]->mOffsetMatrix);
+				m_BoneInfo[BoneIndex].name = BoneName;
+			//	AnimationData data;
+			//	animationData.push_back(data);
+			//	animationData[BoneIndex].name = BoneName;
+			//	animationData[BoneIndex].boneOffset = aiMatrix4x4ToGlm(&mesh->mBones[i]->mOffsetMatrix);
 
 				m_BoneMapping[BoneName] = BoneIndex;
 			}
@@ -389,8 +389,15 @@ private:
 		m.bones = Bones;
 		m.AnimationInit(vertices, indices, Bones);
 		m.boneInfo = m_BoneInfo;
-		
-		m.adata = animData;
+		if (m_pScene->HasAnimations()) {
+			Animation animation;
+			animation.ticksperSec = m_pScene->mAnimations[0]->mTicksPerSecond;
+			animation.duration = m_pScene->mAnimations[0]->mDuration;
+			animation.adata = animData;
+			animation.initAction();
+			m.animation = animation;
+		}
+	
 		// process materials
 		// we assume a convention for sampler names in the shaders. Each diffuse texture should be named
 		// as 'texture_diffuseN' where N is a sequential number ranging from 1 to MAX_SAMPLER_NUMBER. 
@@ -438,8 +445,8 @@ private:
 					 trans.time = pNodeAnim->mRotationKeys[i].mTime;
 					 data.animationTransformation.push_back(trans);
 					 data.name = NodeName;
-					 data.ticksperSec = pAnimation->mTicksPerSecond;
-					 data.duration =  pAnimation->mDuration;
+					// data.ticksperSec = pAnimation->mTicksPerSecond;
+					// data.duration =  pAnimation->mDuration;
 					
 				
 			}
@@ -480,15 +487,8 @@ private:
 			globalTransform = ParentMatrix * RotationMatrix;
 			int BoneIndex = m_BoneMapping[NodeName];
 			glm::mat4 final = globalTransform ;
-			if (aData->childAnimationData.size() > 0) {
-				//aData->childAnimationData[aData->childAnimationData.size() - 1].boneOffset = m_BoneInfo[BoneIndex].BoneOffset;
-				
-			}
-			else {
-				//aData->boneOffset = m_BoneInfo[BoneIndex].BoneOffset;
-			}
-			aData->childAnimationData[aData->childAnimationData.size() - 1].boneOffset = m_BoneInfo[BoneIndex].BoneOffset;
-			aData->childAnimationData[aData->childAnimationData.size() - 1].anim = true;
+			
+			
 		
 			
 		}
