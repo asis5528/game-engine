@@ -77,13 +77,13 @@ public:
 	std::vector<unsigned int> indices;
 	std::vector <glm::mat4> bonePoseMatrix;
 	std::vector< BoneInfo> boneInfo;
-	Animation animation;
+	//Animation animation;
 	glm::vec3 MaxBounds;
 	glm::vec3 MinBounds;
 	glm::vec3 Dimensions;
 	unsigned int VAO;
-	float timer = 0.0;
-	bool animPlay = false;
+
+
 
 	/*  Functions  */
 	// constructor
@@ -153,47 +153,7 @@ public:
 
 	void Draw(Shader shader,bool line  = 0)
 	{
-		Animation* data = &animation;
-		glm::mat4 parent(1.0);
-
-		if (animPlay) {
-			timer += 0.01*24*data->actions[data->actionIndex].speed;
-		}
-		float range = data->actions[data->actionIndex].range.y - data->actions[data->actionIndex].range.x;
-		timer = fmod(timer,range);
-		//float animationTime = timer + data->actions[data->actionIndex].range.x;
-		//timer += data->actions[data->actionIndex].range.x;
 		
-		data->info.clear();
-		data->readAnimation((timer+ data->actions[data->actionIndex].range.x )/24, data->adata, parent);
-
-		std::vector<glm::mat4> boneMatrices;
-		unsigned int j = 0;
-		for (unsigned int i = 0; i < data->info.size();i++) {
-			if (data->info[i].name != boneInfo[j].name) {
-				//data->info.erase(data->info.begin() + i);
-				
-
-			}
-			else {
-				boneMatrices.push_back(data->info[i].transformedBone);
-				j += 1;
-				if (j > boneInfo.size() - 1) {
-					break;
-				}
-			}
-
-		}
-
-		shader.setBool("hasAnimation", data->adata.childAnimationData.size()>0);
-		if(data->adata.childAnimationData.size() > 0){
-			for (int i = 0; i < boneMatrices.size(); i++) {
-				string loc = string("boneMat[") + std::to_string(i) + string("]");
-			
-				shader.setMat4(loc, boneMatrices[i]*boneInfo[i].BoneOffset);
-			
-			}
-		}
 
 		glBindVertexArray(VAO);
 		if (line) {

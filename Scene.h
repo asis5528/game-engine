@@ -31,7 +31,7 @@ public:
 	std::vector<Primitives> allPrimitives;
 	std::vector<AnimationData> adata;
 	std::vector<Texture> textures;
-	
+	std::vector<Animation> animations;
 	std::vector<int> selected;
 	int selectionIndex = 0;
 	int previous = -1;
@@ -121,7 +121,7 @@ public:
 				object.mat.shad->setInt("selected", 0);
 				
 			
-				
+				object.sendTransforms(*camera, allPrimitives[object.primitiveID].mesh,animations[object.animationID]);
 				object.draw(*camera, allPrimitives[object.primitiveID].mesh);
 			}
 		}
@@ -360,9 +360,11 @@ public:
 					}
 					model.names[i] = Tools::space2underscore(model.names[i]);
 					Objects object(allPrimitives.size(), model.names[i], def);
+					animations.push_back(model.sceneAnimation);
+					//adatas.push_back(model.sceneAnimation.adata);
+					object.animationID = animations.size() - 1;
 					Primitives p;
 					p.mesh = model.meshes[i];
-					
 					p.name = model.names[i];
 					allPrimitives.push_back(p);
 					object.position = model.positions[i];
@@ -403,7 +405,7 @@ public:
 
 	void saveSceneData(string directoryPath,bool exportFully = false) {
 	
-		SceneLoader::saveSceneData(directoryPath, exportFully,allPrimitives, objects,textures,sceneLights);
+		SceneLoader::saveSceneData(directoryPath, exportFully,allPrimitives,animations, objects,textures,sceneLights);
 	}
 
 	void loadSceneData(string finalPath) {
@@ -450,10 +452,9 @@ public:
 	void DuplicateObject() {
 		if (objects.size() > 0) {
 			string finalName = objects[selectionIndex].name + std::to_string(objects.size());
-			Objects dup = Objects(objects[selectionIndex].primitiveID, finalName, objects[selectionIndex].mat);
-			dup.position = objects[selectionIndex].position;
-			dup.rotation = objects[selectionIndex].rotation;
-			dup.scale = objects[selectionIndex].scale;
+			Objects dup = objects[selectionIndex];
+			dup.name = finalName;
+		
 			objects.push_back(dup);
 		}
 	}

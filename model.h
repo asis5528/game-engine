@@ -25,6 +25,7 @@ class Model
 public:
 	/*  Model Data */
 	vector<string> names;
+	Animation sceneAnimation;
 	vector<Mesh> meshes;
 	vector<glm::mat4> transformations;
 	vector<glm::vec3> positions;
@@ -179,7 +180,7 @@ private:
 		//float k =  scene->mAnimations[0]->mDuration;
 		//globalInverseTransform = aiMatrix4x4ToGlm(&scene->mRootNode->mTransformation);
 		//glm::inverse(globalInverseTransform);
-
+		
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
 		{
 			cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << endl;
@@ -198,6 +199,18 @@ private:
 
 		// process ASSIMP's root node recursively
 		processNode(scene->mRootNode, scene,fbx, obj);
+		AnimationData animData;
+		if (m_pScene->HasAnimations()) {
+			readAnimation(scene->mRootNode, &animData);
+		}
+		if (m_pScene->HasAnimations()) {
+			Animation animation;
+			animation.ticksperSec = m_pScene->mAnimations[0]->mTicksPerSecond;
+			animation.duration = m_pScene->mAnimations[0]->mDuration;
+			animation.adata = animData;
+			animation.initAction();
+			sceneAnimation = animation;
+		}
 	
 	}
 
@@ -231,7 +244,7 @@ private:
 			qrot.w = rotation.w;
 			glm::vec3 rot = glm::degrees(glm::eulerAngles(qrot));
 			if (!obj) {
-				rot.x -= 90;
+				//rot.x -= 90;
 			}
 			
 			if (std::fabs(rot.z) >= 89.99) {
@@ -342,7 +355,7 @@ private:
 				indices.push_back(face.mIndices[j]);
 		} 
 		std::vector< VertexBoneData> Bones;
-
+		
 	
 		if(mesh->HasBones()){
 			Bones.resize(mesh->mNumVertices);
@@ -359,12 +372,11 @@ private:
 				m_BoneInfo.push_back(bi);
 				
 				m_BoneInfo[BoneIndex].BoneOffset = aiMatrix4x4ToGlm(&mesh->mBones[i]->mOffsetMatrix);
-
+				aiVector3D position;
+				aiQuaternion rotation;
+				aiVector3D scale;
+				mesh->mBones[i]->mOffsetMatrix.Decompose(scale, rotation, position);
 				m_BoneInfo[BoneIndex].name = BoneName;
-			//	AnimationData data;
-			//	animationData.push_back(data);
-			//	animationData[BoneIndex].name = BoneName;
-			//	animationData[BoneIndex].boneOffset = aiMatrix4x4ToGlm(&mesh->mBones[i]->mOffsetMatrix);
 
 				m_BoneMapping[BoneName] = BoneIndex;
 			}
@@ -378,25 +390,15 @@ private:
 				Bones[VertexID].AddBoneData(BoneIndex, Weight);
 			}
 		}
-		glm::mat4 parent(1.0);
-		//readAnimation(0,0,scene->mRootNode, parent);
-		AnimationData animData;
-		if (m_pScene->HasAnimations()) {
-			readAnimation(0.1, scene->mRootNode, parent, &animData);
-		}
+	
+		
 		
 		Mesh m;
 		m.bones = Bones;
 		m.AnimationInit(vertices, indices, Bones);
 		m.boneInfo = m_BoneInfo;
-		if (m_pScene->HasAnimations()) {
-			Animation animation;
-			animation.ticksperSec = m_pScene->mAnimations[0]->mTicksPerSecond;
-			animation.duration = m_pScene->mAnimations[0]->mDuration;
-			animation.adata = animData;
-			animation.initAction();
-			m.animation = animation;
-		}
+		
+		
 	
 		// process materials
 		// we assume a convention for sampler names in the shaders. Each diffuse texture should be named
@@ -413,7 +415,7 @@ private:
 	
 	
 
-	void readAnimation(float AnimationTime,const aiNode* pNode, const glm::mat4 &ParentMatrix,AnimationData* aData) {
+	void readAnimation(const aiNode* pNode,AnimationData* aData) {
 		string NodeName(pNode->mName.data);
 		const aiAnimation* pAnimation = m_pScene->mAnimations[0];
 		const aiNodeAnim* pNodeAnim = FindNodeAnim(pAnimation, NodeName);
@@ -452,56 +454,24 @@ private:
 			}
 				aData->childAnimationData.push_back(data);
 
-			float time = 0.1;
-			glm::quat q;
-			aiQuaternion RotationQ;
-			CalcInterpolatedRotation(RotationQ, time, pNodeAnim);
-			
-			q.w = RotationQ.w;
-			q.x = RotationQ.x;
-			q.y = RotationQ.y;
-			q.z = RotationQ.z;
-			RotationMatrix = glm::toMat4(q);
-			glm::mat4 trans(1.0);
-			glm::mat4 scale(1.0);
 			
 
-			//aiVector3D pos = pNodeAnim->mPositionKeys[0].mValue;
+	
 			
-			aiVector3D pos;
-			CalcInterpolatedPosition(pos, time, pNodeAnim);
-			//aiVector3D sc = pNodeAnim->mScalingKeys[0].mValue;
-			aiVector3D sc;
-			CalcInterpolatedScaling(sc, time, pNodeAnim);
-
-			trans = glm::translate(trans, glm::vec3(pos.x, pos.y, pos.z));
-			scale = glm::scale(scale, glm::vec3(sc.x, sc.y, sc.z));
-			RotationMatrix = trans * RotationMatrix * scale;
 			
-			float k = 2.;
 			
 		}
-		//aData->childAnimationData.resize(pNode->mNumChildren);
 		
-		if (m_BoneMapping.find(NodeName) != m_BoneMapping.end()) {
-			globalTransform = ParentMatrix * RotationMatrix;
-			int BoneIndex = m_BoneMapping[NodeName];
-			glm::mat4 final = globalTransform ;
-			
-			
-		
-			
-		}
 		
 		for (int i = 0; i < pNode->mNumChildren; i++) {
 			std::cout << "parent : " << pNode->mName.data << " --- child : " << pNode->mChildren[i]->mName.data << "\n";
 			
 				if (pNodeAnim) {
-					readAnimation(AnimationTime, pNode->mChildren[i], globalTransform, &aData->childAnimationData[aData->childAnimationData.size() - 1]);
-					//readAnimation(AnimationTime, pNode->mChildren[i], globalTransform, &aData->childAnimationData[aData->childAnimationData.size() - 1]);
+					readAnimation( pNode->mChildren[i], &aData->childAnimationData[aData->childAnimationData.size() - 1]);
+					
 				}
 				else {
-					readAnimation(AnimationTime, pNode->mChildren[i], globalTransform, aData);
+					readAnimation( pNode->mChildren[i], aData);
 				}
 				
 			
@@ -523,121 +493,17 @@ private:
 	}
 
 
-	int FindPosition(float AnimationTime, const aiNodeAnim* pNodeAnim)
-	{
-		for (unsigned int i = 0; i < pNodeAnim->mNumPositionKeys - 1; i++) {
-			if (AnimationTime < (float)pNodeAnim->mPositionKeys[i + 1].mTime) {
-				return i;
-			}
-		}
-
-		assert(0);
-
-		return 0;
-	}
 
 
-	int FindRotation(float AnimationTime, const aiNodeAnim* pNodeAnim)
-	{
-		assert(pNodeAnim->mNumRotationKeys > 0);
-
-		for (unsigned int i = 0; i < pNodeAnim->mNumRotationKeys - 1; i++) {
-			if (AnimationTime < (float)pNodeAnim->mRotationKeys[i + 1].mTime) {
-				return i;
-			}
-		}
-
-		assert(0);
-
-		return 0;
-	}
 
 
-	int FindScaling(float AnimationTime, const aiNodeAnim* pNodeAnim)
-	{
-		assert(pNodeAnim->mNumScalingKeys > 0);
-
-		for (unsigned int i = 0; i < pNodeAnim->mNumScalingKeys - 1; i++) {
-			if (AnimationTime < (float)pNodeAnim->mScalingKeys[i + 1].mTime) {
-				return i;
-			}
-		}
-
-		assert(0);
-
-		return 0;
-	}
 
 
-	void CalcInterpolatedPosition(aiVector3D& Out, float AnimationTime, const aiNodeAnim* pNodeAnim)
-	{
-		if (pNodeAnim->mNumPositionKeys == 1) {
-			Out = pNodeAnim->mPositionKeys[0].mValue;
-			return;
-		}
-
-		unsigned int PositionIndex = FindPosition(AnimationTime, pNodeAnim);
-		unsigned int NextPositionIndex = (PositionIndex + 1);
-		assert(NextPositionIndex < pNodeAnim->mNumPositionKeys);
-		float DeltaTime = (float)(pNodeAnim->mPositionKeys[NextPositionIndex].mTime - pNodeAnim->mPositionKeys[PositionIndex].mTime);
-		float Factor = (AnimationTime - (float)pNodeAnim->mPositionKeys[PositionIndex].mTime) / DeltaTime;
-		assert(Factor >= 0.0f && Factor <= 1.0f);
-		const aiVector3D& Start = pNodeAnim->mPositionKeys[PositionIndex].mValue;
-		const aiVector3D& End = pNodeAnim->mPositionKeys[NextPositionIndex].mValue;
-		aiVector3D Delta = End - Start;
-		Out = Start + Factor * Delta;
-	}
 
 
-	void CalcInterpolatedRotation(aiQuaternion& Out, float AnimationTime, const aiNodeAnim* pNodeAnim)
-	{
-		// we need at least two values to interpolate...
-		if (pNodeAnim->mNumRotationKeys == 1) {
-			Out = pNodeAnim->mRotationKeys[0].mValue;
-			return;
-		}
-		
-		unsigned int RotationIndex = FindRotation(AnimationTime, pNodeAnim);
-		unsigned int NextRotationIndex = (RotationIndex + 1);
-		assert(NextRotationIndex < pNodeAnim->mNumRotationKeys);
-		float DeltaTime = (float)(pNodeAnim->mRotationKeys[NextRotationIndex].mTime - pNodeAnim->mRotationKeys[RotationIndex].mTime);
-		float Factor = (AnimationTime - (float)pNodeAnim->mRotationKeys[RotationIndex].mTime) / DeltaTime;
-		assert(Factor >= 0.0f && Factor <= 1.0f);
-		const aiQuaternion& StartRotationQ = pNodeAnim->mRotationKeys[RotationIndex].mValue;
-		const aiQuaternion& EndRotationQ = pNodeAnim->mRotationKeys[NextRotationIndex].mValue;
-		glm::quat q1;
-		q1.w = StartRotationQ.w; q1.x = StartRotationQ.x; q1.y = StartRotationQ.y; q1.z = StartRotationQ.z;
-		glm::quat q2;
-		q2.w = EndRotationQ.w; q2.x = EndRotationQ.x; q2.y = EndRotationQ.y; q2.z = EndRotationQ.z;
-
-		glm::quat fina = glm::mix(q1, q2, Factor);
-		aiQuaternion::Interpolate(Out, StartRotationQ, EndRotationQ, Factor);
-		Out = Out.Normalize();
-		Out.w = fina.w; 
-		Out.x = fina.x; 
-		Out.y = fina.y; 
-		Out.z = fina.z;
-	}
 
 
-	void CalcInterpolatedScaling(aiVector3D& Out, float AnimationTime, const aiNodeAnim* pNodeAnim)
-	{
-		if (pNodeAnim->mNumScalingKeys == 1) {
-			Out = pNodeAnim->mScalingKeys[0].mValue;
-			return;
-		}
 
-		unsigned int ScalingIndex = FindScaling(AnimationTime, pNodeAnim);
-		unsigned int NextScalingIndex = (ScalingIndex + 1);
-		assert(NextScalingIndex < pNodeAnim->mNumScalingKeys);
-		float DeltaTime = (float)(pNodeAnim->mScalingKeys[NextScalingIndex].mTime - pNodeAnim->mScalingKeys[ScalingIndex].mTime);
-		float Factor = (AnimationTime - (float)pNodeAnim->mScalingKeys[ScalingIndex].mTime) / DeltaTime;
-		assert(Factor >= 0.0f && Factor <= 1.0f);
-		const aiVector3D& Start = pNodeAnim->mScalingKeys[ScalingIndex].mValue;
-		const aiVector3D& End = pNodeAnim->mScalingKeys[NextScalingIndex].mValue;
-		aiVector3D Delta = End - Start;
-		Out = Start + Factor * Delta;
-	}
 
 
 	// checks all material textures of a given type and loads the textures if they're not loaded yet.

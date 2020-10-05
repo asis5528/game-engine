@@ -383,18 +383,34 @@ public:
 		}
 	
 	}
-	void AnimationActionSelector(Mesh& mesh) {
+	void AnimationActionSelector(Animation *animation,Objects *object) {
 		string finalTitle = "choose actions";
-		if (ImGui::BeginCombo(finalTitle.c_str(), mesh.animation.actions[mesh.animation.actionIndex].name.c_str())) {
-			for (int i = 0; i < mesh.animation.actions.size(); i++) {
-				bool is_selected = (mesh.animation.actionIndex == i);
-				if (ImGui::Selectable(mesh.animation.actions[i].name.c_str(), is_selected)) {
-					mesh.animation.actionIndex = i;
+		if (ImGui::BeginCombo(finalTitle.c_str(), animation->actions [object->actionIndex].name.c_str())) {
+			for (int i = 0; i < animation->actions.size(); i++) {
+				bool is_selected = (object->actionIndex == i);
+				if (ImGui::Selectable(animation->actions[i].name.c_str(), is_selected)) {
+					object->actionIndex = i;
 				}
 				if (is_selected) {
 					ImGui::SetItemDefaultFocus();
 				}
 				
+			}
+			ImGui::EndCombo();
+		}
+	}
+	void BlendActionSelector(Animation* animation, Objects* object) {
+		string finalTitle = "choose Blend action";
+		if (ImGui::BeginCombo(finalTitle.c_str(), animation->actions[object->blendIndex].name.c_str())) {
+			for (int i = 0; i < animation->actions.size(); i++) {
+				bool is_selected = (object->blendIndex == i);
+				if (ImGui::Selectable(animation->actions[i].name.c_str(), is_selected)) {
+					object->blendIndex = i;
+				}
+				if (is_selected) {
+					ImGui::SetItemDefaultFocus();
+				}
+
 			}
 			ImGui::EndCombo();
 		}
@@ -582,26 +598,31 @@ public:
 				ImGui::EndTabItem();
 			}
 			if (ImGui::BeginTabItem("Animation")) {
-			Mesh *mesh = &scene.allPrimitives[scene.objects[scene.selectionIndex].primitiveID].mesh;
+			//Mesh *mesh = &scene.allPrimitives[scene.objects[scene.selectionIndex].primitiveID].mesh;
+			Objects* ob = &scene.objects[scene.selectionIndex];
+			Animation* anim = &scene.animations[ob->animationID];
 			float k = 0.0f;
 			float n = 12.0f;
 			//ImGui::DragFloatRange2("AnimationTime", &k, &n, 1.0);
-			AnimationActionSelector(*mesh);
-			if (mesh->animPlay) {
+			AnimationActionSelector(anim,ob);
+			if (ob->animPlay) {
 				if (ImGui::Button("pause")) {
-					mesh->animPlay = false;
+					ob->animPlay = false;
 				}
 			}
 			else {
 				if (ImGui::Button("play")) {
-					mesh->animPlay = true;
+					ob->animPlay = true;
 				}
 
 			}
 			
-			ImGui::SliderFloat(mesh->animation.actions[mesh->animation.actionIndex].name.c_str(), &mesh->timer,0.0, mesh->animation.actions[mesh->animation.actionIndex].range.y- mesh->animation.actions[mesh->animation.actionIndex].range.x);
-			static float a, b;
-			ImGui::DragFloatRange2("range", &a, &b, 1.0);
+			ImGui::SliderFloat(anim->actions[ob->actionIndex].name.c_str(), &ob->animationTime,0.0, anim->actions[ob->actionIndex].range.y- anim->actions[ob->actionIndex].range.x);
+			//ImGui::DragFloat("Animation Speed", &anim->actions[ob->actionIndex].speed);
+			
+			ImGui::SliderFloat("blend factor", &ob->blendFactor, 0.0, 1.0);
+			BlendActionSelector(anim, ob);
+			
 			ImGui::EndTabItem();
 			}
 

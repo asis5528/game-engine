@@ -141,11 +141,12 @@ public:
 		//Mesh m = Mesh(verts, indices);
 		Mesh m;
 		m.boneInfo = boneInfo;
-		Animation animation;
-		loadAnimation(path, animation);
-		m.animation = animation;
-		m.animation.initAction();
-		m.AnimationInit(verts, indices, bones);
+		//////////Come back////////////
+		//Animation animation;
+		//loadAnimation(path, animation);
+		//m.animation = animation;
+		//m.animation.initAction();
+		//m.AnimationInit(verts, indices, bones);
 		return m;
 
 	}
@@ -305,14 +306,15 @@ public:
 				}
 				myfile << " \n";
 				
-				
-
-			}
-			//myfile.close();
-			if (p.mesh.animation.adata.childAnimationData.size() > 0) {
 				myfile << "boneList \n";
 				saveBoneListMesh(myfile, p.mesh);
 				myfile.close();
+
+			}
+			//myfile.close();
+			/*
+			if (p.mesh.animation.adata.childAnimationData.size() > 0) {
+				
 				ofstream myfile;
 				string finalname = path + "\\" + p.name + ".anibln";
 				std::cout << finalname << "\n";
@@ -328,6 +330,7 @@ public:
 				
 				myfile.close();
 			}
+			*/
 		}
 	}
 
@@ -344,6 +347,27 @@ public:
 		}
 
 	}
+
+
+	static void saveAnimation(std::vector<Animation>& animations, string& path) {
+		for (Animation& animation : animations) {
+			ofstream myfile;
+			string finalname = path + "\\" + "animtion"+ ".anibln";
+			std::cout << finalname << "\n";
+			myfile.open(finalname);
+			myfile << "Animation ";
+			myfile << animation.duration << " " << animation.ticksperSec << "\n";
+			saveBoneAnimation(myfile, animation.adata);
+			myfile << "AnimationTree" << "\n";
+			//myfile << "hehe";
+			saveBoneTree(myfile, animation.adata);
+
+			myfile.close();
+			
+		}
+
+	}
+
 
 	static void saveBoneTree(ofstream& myfile, AnimationData& adata) {
 		myfile << adata.name;
@@ -549,7 +573,7 @@ public:
 				object.rotation = rotation;
 				object.scale = scale;
 				object.textureID = textureIDS;
-				//object.mat.mode = static_cast<Material::Mode>( 0);
+
 				objects.push_back(object);
 
 			}
@@ -557,16 +581,19 @@ public:
 		}
 	}
 
-	static void saveSceneData(string filePath, bool exportFully,std::vector<Primitives>& allPrimitives, std::vector<Objects>& objects, std::vector<Texture>& textures, Lights& sceneLights) {
+	static void saveSceneData(string filePath, bool exportFully,std::vector<Primitives>& allPrimitives,std::vector<Animation>& animations, std::vector<Objects>& objects, std::vector<Texture>& textures, Lights& sceneLights) {
 		//SceneLoader sceneload;
 
 		ofstream myfile;
 		string directoryPath = Tools::getPathName(filePath);
 		string primitivePath = directoryPath + "\\primitives";
 		string texturePath = directoryPath + "\\textures";
+		string animationPath = directoryPath + "\\animations";
 		CreateDirectory(primitivePath.c_str(), NULL);
 		CreateDirectory(texturePath.c_str(), NULL);
+		CreateDirectory(animationPath.c_str(), NULL);
 		savePrimitive(allPrimitives, primitivePath);
+		saveAnimation(animations, animationPath);
 		string finalname = filePath;
 		myfile.open(finalname);
 		myfile << "NObjects " << objects.size() << "\n";
