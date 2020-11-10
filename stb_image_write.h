@@ -280,6 +280,8 @@ static void stbi__start_write_callbacks(stbi__write_context* s, stbi_write_func*
 
 static void stbi__stdio_write(void* context, void* data, int size)
 {
+	// char* k =(char*) data;
+	//std::cout << k << "\n";
 	fwrite(data, 1, size, (FILE*)context);
 }
 

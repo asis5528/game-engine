@@ -19,6 +19,7 @@ public:
 	glm::mat4 modelMatrix;
 	glm::vec2 screenPos = glm::vec2(0.,0.);
 	unsigned int animationID;
+	std::vector<unsigned int> animationIDs;
 	std::vector<glm::mat4> boneMatrices;
 
 	float animationTime;
@@ -36,7 +37,7 @@ public:
 	} 
 	Objects() {}
 
-	void sendTransforms(Camera cam,Mesh &Mesh,Animation &anim) {
+	void sendTransforms(Camera cam,Mesh &Mesh) {
 		mat.shad->use();
 		mat.shad->setMat4("projection", cam.projMat);
 		mat.shad->setMat4("view", cam.GetViewMatrix());
@@ -55,6 +56,12 @@ public:
 		glm::vec3 ndcSpacePos = glm::vec3(pos.x / pos.w, pos.y / pos.w, pos.z / pos.w);
 		screenPos = glm::vec2(ndcSpacePos.x * 0.5 + 0.5, ndcSpacePos.y * 0.5 + 0.5);
 		mat.shad->setMat4("model", modelMatrix);
+	
+
+	}
+
+	void processAnimation(Mesh& Mesh, Animation& anim) {
+
 		//animation
 
 		Animation* data = &anim;
@@ -67,8 +74,8 @@ public:
 		if (animPlay) {
 			animationTime += 0.5;
 		}
-		
-		data->BoneTransform(animationTime,actionIndex,blendIndex,blendFactor);
+		animationTime = fmod(animationTime, range);
+		data->BoneTransform(animationTime, actionIndex, blendIndex, blendFactor);
 		//	data->info.clear();
 			//data->readAnimation((timer+ data->actions[data->actionIndex].range.x )/30, data->adata, parent);
 
@@ -100,8 +107,8 @@ public:
 			}
 		}
 
-
 	}
+
 	void draw(Camera cam,Mesh &Mesh) {
 		//glCullFace(GL_BACK);
 		//glEnable(GL_CULL_FACE);

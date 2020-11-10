@@ -11,8 +11,9 @@ struct AnimationAction {
 };
 class Animation {
 public:
-
+	string name;
 	AnimationData adata;
+	bool selected;
 	float ticksperSec;
 	float duration;
 	std::vector<BoneProcessedMat> info;

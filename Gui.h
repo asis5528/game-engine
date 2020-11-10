@@ -1,7 +1,7 @@
 #include <Shlwapi.h>
 #include <tchar.h>
 #include <shlobj.h> 
-
+#include "imgui_stdlib.h"
 class Gui {
 GLFWwindow *window;
 public:
@@ -211,7 +211,7 @@ public:
 			if (change) {
 			
 				
-				
+				//t.name.resize(100);
 				string* name = &t.name;
 				ImGui::InputText("setTheName", (char*)name->c_str(), name->capacity() + 1);
 			}
@@ -223,6 +223,9 @@ public:
 			
 			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) { 
 				change = true;
+			}
+			else if (!ImGui::IsItemHovered() && ImGui::IsMouseClicked(0)) {
+				change = false;
 			}
 			
 
@@ -598,31 +601,46 @@ public:
 				ImGui::EndTabItem();
 			}
 			if (ImGui::BeginTabItem("Animation")) {
-			//Mesh *mesh = &scene.allPrimitives[scene.objects[scene.selectionIndex].primitiveID].mesh;
-			Objects* ob = &scene.objects[scene.selectionIndex];
-			Animation* anim = &scene.animations[ob->animationID];
-			float k = 0.0f;
-			float n = 12.0f;
-			//ImGui::DragFloatRange2("AnimationTime", &k, &n, 1.0);
-			AnimationActionSelector(anim,ob);
-			if (ob->animPlay) {
-				if (ImGui::Button("pause")) {
-					ob->animPlay = false;
-				}
-			}
-			else {
-				if (ImGui::Button("play")) {
-					ob->animPlay = true;
-				}
+				//Mesh *mesh = &scene.allPrimitives[scene.objects[scene.selectionIndex].primitiveID].mesh;
+				if(scene.objects.size()>0){
+					Objects* ob = &scene.objects[scene.selectionIndex];
+					if(ob->animationIDs.size()>0){
+						if (ImGui::CollapsingHeader("Animation Actions")) {
+							
 
-			}
+							
+							Animation* anim = &scene.animations[ob->animationIDs[0]];
+							float k = 0.0f;
+							float n = 12.0f;
+							//ImGui::DragFloatRange2("AnimationTime", &k, &n, 1	.0);
+							AnimationActionSelector(anim,ob);
+							if (ob->animPlay) {
+								if (ImGui::Button("pause")) {
+									ob->animPlay = false;
+								}
+							}
+							else {
+								if (ImGui::Button("play")) {
+									ob->animPlay = true;
+								}
+
+							}
+							float range = anim->actions[ob->actionIndex].range.y - anim->actions[ob->actionIndex].range.x;
+							ImGui::SliderFloat(anim->actions[ob->actionIndex].name.c_str(), &ob->animationTime,0.0, range);
+							//ImGui::DragFloat("Animation Speed", &anim->actions[ob->actionIndex].speed);
 			
-			ImGui::SliderFloat(anim->actions[ob->actionIndex].name.c_str(), &ob->animationTime,0.0, anim->actions[ob->actionIndex].range.y- anim->actions[ob->actionIndex].range.x);
-			//ImGui::DragFloat("Animation Speed", &anim->actions[ob->actionIndex].speed);
-			
-			ImGui::SliderFloat("blend factor", &ob->blendFactor, 0.0, 1.0);
-			BlendActionSelector(anim, ob);
-			
+							ImGui::SliderFloat("blend factor", &ob->blendFactor, 0.0, 1.0);
+							BlendActionSelector(anim, ob);
+							if (ImGui::CollapsingHeader("Action List")) {
+								for (unsigned int i = 0; i < anim->actions.size(); i++) {
+									ImGui::DragFloat((std::string("Action_")+anim->actions[i].name).c_str(), &anim->actions[i].range.x,1.0,0.0,anim->duration*anim->fps);
+
+									//ImGui::DragFloatRange2(anim->actions[i].name.c_str(), &anim->actions[i].range.x,)
+								}
+							}
+						}
+					}
+				}
 			ImGui::EndTabItem();
 			}
 
@@ -717,6 +735,37 @@ public:
 			}
 			ImGui::EndTabItem();
 		}
+		if (ImGui::BeginTabItem("Animation List")) {
+			{
+				for (Animation& a : scene.animations) {
+					static bool change = false;
+					if (change) {
+						//	a.name.resize(100);
+						string* name = &a.name;
+						//ImGui::InputText("setTheName", (char*)name->c_str(), name->capacity() + 1);
+						ImGui::InputText("Name", name);
+					}
+					else {
+						ImGui::Selectable(a.name.c_str(), a.selected);
+					}
+					
+					if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(0))
+					{
+						// Do stuff on Selectable() double click.                                                                                                                                                                                                                           
+						a.selected = !a.selected;
+					}
+
+					if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
+						change = true;
+					}
+					else if (!ImGui::IsItemHovered() && ImGui::IsMouseClicked(0)) {
+						change = false;
+					}
+				}
+
+			}
+			ImGui::EndTabItem();
+		}
 
 		if (ImGui::BeginTabItem("Light List")) {
 			{
@@ -779,6 +828,7 @@ public:
 						}
 						
 					}
+					
 					if (ImGui::MenuItem("Export", "Ctrl+E")) { /* Do stuff */
 
 						const char* filter = _T("Sav Files (*.sav)\0*.sav\0");
@@ -790,6 +840,21 @@ public:
 								savefilePath += ".sav";
 							}
 							scene.saveSceneData(savefilePath,true);
+						}
+
+					}
+
+					if (ImGui::MenuItem("Save Js Primitve", "Ctrl+J")) { /* Do stuff */
+
+						const char* filter = _T("Sav Files (*.js)\0*.js\0");
+						string savefilePath = SaveFile(filter);
+
+						if (savefilePath != "") {
+							string ext = Tools::getExtensionName(savefilePath);
+							if (ext != "js") {
+								savefilePath += ".js";
+							}
+							scene.saveJsScene(savefilePath);
 						}
 
 					}

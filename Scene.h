@@ -26,7 +26,7 @@ struct Texture {
 #include "SceneLoader.h"
 class Scene {
 public:
-	Camera *camera;
+	Camera* camera;
 	std::vector<Objects> objects;
 	std::vector<Primitives> allPrimitives;
 	std::vector<AnimationData> adata;
@@ -68,11 +68,11 @@ public:
 	CubeMapGenerator mapgen;
 	Model model;
 
-	
-	Scene(Camera &cam) {
+
+	Scene(Camera& cam) {
 		ObjectShader = Shader("Data/Shaders/object.vert", "Data/Shaders/object.frag");
 		DefaultShader = Shader("Data/Shaders/Default.vert", "Data/Shaders/Default.frag");
-		TexturedShader  = Shader("Data/Shaders/Default.vert", "Data/Shaders/Textured.frag");
+		TexturedShader = Shader("Data/Shaders/Default.vert", "Data/Shaders/Textured.frag");
 		Shader pbr = Shader("Data/Shaders/Default.vert", "Data/Shaders/pbr.frag");
 		skyshader = Shader("Data/Shaders/skybox.vert", "Data/Shaders/skybox.frag");
 		shads.push_back(DefaultShader);
@@ -81,12 +81,12 @@ public:
 		//m  = Material();
 		mapgen.init();
 		cube.init();
-	
+
 		pickingShader = Shader("Data/Shaders/default.vert", "Data/Shaders/picking.frag");
 		bloom1Shader = Shader("Data/Shaders/Hblur.vert", "Data/Shaders/bloom1.frag");
 		bloom2Shader = Shader("Data/Shaders/Vblur.vert", "Data/Shaders/bloom1.frag");
 		q.init();
-		line =  LineRenderer(vec3(-10, 0, -10), vec3(10, 0, -10));
+		line = LineRenderer(vec3(-10, 0, -10), vec3(10, 0, -10));
 		line2 = LineRenderer(vec3(-10, 0, 10), vec3(-10, 0, -10));
 		line3 = LineRenderer(vec3(0, -1000, 0), vec3(0, 1000, 0));
 		tex2 = q.LoadTexture("Data/logo.png");
@@ -97,36 +97,39 @@ public:
 		fbo2 = FBO(camera->width, camera->height, 1);
 		bloom1 = FBO(camera->width, camera->height, 1);
 		bloom2 = FBO(camera->width, camera->height, 1);
-		bloom3 = FBO(camera->width , camera->height, 1);
-		bloom4 = FBO(camera->width, camera->height , 1);
+		bloom3 = FBO(camera->width, camera->height, 1);
+		bloom4 = FBO(camera->width, camera->height, 1);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		
-		
-		
+
+
+
 	}
 	Scene() {
 
 	}
-	
+
 	void drawObjects(bool blend) {
-		
-		
+
+
 		for (Objects& object : objects) {
 			if (object.mat.blending == blend) {
-				
-				object.mat.set(shads, sceneLights, textures, object.textureID,camera);
-				
+
+				object.mat.set(shads, sceneLights, textures, object.textureID, camera);
+
 				object.mat.start();
 				object.mat.shad->setInt("selected", 0);
-				
-			
-				object.sendTransforms(*camera, allPrimitives[object.primitiveID].mesh,animations[object.animationID]);
+
+
+				object.sendTransforms(*camera, allPrimitives[object.primitiveID].mesh);
+				if (object.animationIDs.size() > 0) {
+					object.processAnimation(allPrimitives[object.primitiveID].mesh, animations[object.animationIDs[0]]);
+				}
 				object.draw(*camera, allPrimitives[object.primitiveID].mesh);
 			}
 		}
 	}
-	void environmentMapGenerator(unsigned int ID ) {
+	void environmentMapGenerator(unsigned int ID) {
 		unsigned int tex = mapgen.generateCubeMap(512, 512, textures[ID].id);
 		Texture t;
 		t.id = tex;
@@ -168,17 +171,17 @@ public:
 		Mesh m = allPrimitives[objects[selectionIndex].primitiveID].mesh;
 		ofstream myfile;
 		myfile.open("saved.txt");
-		for (int i = 0; i < m.vertices.size();i++) {
-			myfile <<"glVertex3d(" <<m.vertices[i].Position.x <<" ,"<< m.vertices[i].Position.y << ", " << m.vertices[i].Position.z<<");"<<"\n";
+		for (int i = 0; i < m.vertices.size(); i++) {
+			myfile << "glVertex3d(" << m.vertices[i].Position.x << " ," << m.vertices[i].Position.y << ", " << m.vertices[i].Position.z << ");" << "\n";
 
 		}
 	}
-	void draw(Camera &camera) {
+	void draw(Camera& camera) {
 		/*
 		if (textures.size() > 0) {
 			if (!mapgen.state) {
 
-			
+
 			unsigned int tex = mapgen.generateCubeMap(512, 512, textures[0].id);
 			Texture t;
 			t.id = tex;
@@ -205,28 +208,28 @@ public:
 		if (!onlyRender) {
 
 
-		glLineWidth(2.0f);
-		line.draw(camera, vec3(0.0, 0.0, 1.),21);
-		line2.draw(camera, vec3(1.0, 0.0, 0.),21);
-		
-		if (action_axis == 2) {
-		
-			line3.draw(camera, vec3(0, 0, 0), 1, vec3(0., 0., 1.), objects[selectionIndex].position);
-		}
-		else if (action_axis == 1) {
-			
-			glm::mat4 model(1.0);
-			glm::translate(model, objects[selectionIndex].position);
-			glm::rotate(model, 1.5708f, glm::vec3(0, 0, 1));
-			line3.draw(camera, vec3(0, 0, 0), 1, vec3(1., 0., 0.), objects[selectionIndex].position, glm::vec4(0, 0, 1, 1.5708f));
-		}
-		else if (action_axis == 3) {
-			
-			glm::mat4 model(1.0);
-			line3.draw(camera, vec3(0, 0, 0), 1, vec3(0., 1., 0.), objects[selectionIndex].position, glm::vec4(1, 0, 0, 1.5708f));
-		}
-	
-		glLineWidth(2.0);
+			glLineWidth(2.0f);
+			line.draw(camera, vec3(0.0, 0.0, 1.), 21);
+			line2.draw(camera, vec3(1.0, 0.0, 0.), 21);
+
+			if (action_axis == 2) {
+
+				line3.draw(camera, vec3(0, 0, 0), 1, vec3(0., 0., 1.), objects[selectionIndex].position);
+			}
+			else if (action_axis == 1) {
+
+				glm::mat4 model(1.0);
+				glm::translate(model, objects[selectionIndex].position);
+				glm::rotate(model, 1.5708f, glm::vec3(0, 0, 1));
+				line3.draw(camera, vec3(0, 0, 0), 1, vec3(1., 0., 0.), objects[selectionIndex].position, glm::vec4(0, 0, 1, 1.5708f));
+			}
+			else if (action_axis == 3) {
+
+				glm::mat4 model(1.0);
+				line3.draw(camera, vec3(0, 0, 0), 1, vec3(0., 1., 0.), objects[selectionIndex].position, glm::vec4(1, 0, 0, 1.5708f));
+			}
+
+			glLineWidth(2.0);
 		}
 
 		skyshader.use();
@@ -234,7 +237,7 @@ public:
 		skyshader.setMat4("view", camera.GetViewMatrix());
 		if (textures.size() > 0) {
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D,textures[0].id);
+			glBindTexture(GL_TEXTURE_2D, textures[0].id);
 			skyshader.setInt("equirectangularMap", 0);
 		}
 		//cube.draw(skyshader);
@@ -243,21 +246,21 @@ public:
 		drawObjects(true);
 
 
-		
+
 		glViewport(0, 0, width, height);
-	
+
 		fbo.ubind();
 
 
 
 
 
-		
 
-			fbo2.bind();
-			glClearColor(0., 0., 0., 1.);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			if (!onlyRender) {
+
+		fbo2.bind();
+		glClearColor(0., 0., 0., 1.);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		if (!onlyRender) {
 			for (Objects& object : objects) {
 				if (object.name == objects[selectionIndex].name) {
 					object.mat.shad->use();
@@ -265,65 +268,65 @@ public:
 					object.draw(camera, allPrimitives[object.primitiveID].mesh);
 				}
 			}
-			}
-			glViewport(0, 0, width, height);
-			fbo2.ubind();
-			bool bloom = false;
-			if (bloom) {
+		}
+		glViewport(0, 0, width, height);
+		fbo2.ubind();
+		bool bloom = false;
+		if (bloom) {
 
 
 
 
-		bloom1.bind();
-		q.textures.push_back(fbo.textures[1]);
-		bloom1Shader.use();
-		bloom1Shader.setFloat("width", 2000 /8);
-		q.drawCustom(bloom1Shader.ID);
-		q.textures.clear();
-		bloom1.ubind();
+			bloom1.bind();
+			q.textures.push_back(fbo.textures[1]);
+			bloom1Shader.use();
+			bloom1Shader.setFloat("width", 2000 / 8);
+			q.drawCustom(bloom1Shader.ID);
+			q.textures.clear();
+			bloom1.ubind();
 
 
-		bloom2.bind();
-	//	glClearColor(0., 0., 0., 1.);
-	//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		q.textures.push_back(bloom1.textures[0]);
-		bloom2Shader.use();
-		bloom2Shader.setFloat("height", 2000 / 8);
-		q.drawCustom(bloom2Shader.ID);
-		q.textures.clear();
-		bloom2.ubind();
-		
-		bloom3.bind();
-	//	glClearColor(0., 0., 0., 1.);
-	//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		q.textures.push_back(bloom2.textures[0]);
-		bloom1Shader.use();
-		bloom1Shader.setFloat("width", 2000 / 4);
-		q.drawCustom(bloom1Shader.ID);
-		q.textures.clear();
-		bloom3.ubind();
+			bloom2.bind();
+			//	glClearColor(0., 0., 0., 1.);
+			//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			q.textures.push_back(bloom1.textures[0]);
+			bloom2Shader.use();
+			bloom2Shader.setFloat("height", 2000 / 8);
+			q.drawCustom(bloom2Shader.ID);
+			q.textures.clear();
+			bloom2.ubind();
 
-		bloom4.bind();
-	//	glClearColor(0., 0., 0., 1.);
-	//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		q.textures.push_back(bloom3.textures[0]);
-		bloom1Shader.use();
-		bloom1Shader.setFloat("width", 2000 / 4);
-		q.drawCustom(bloom1Shader.ID);
-		q.textures.clear();
-		bloom4.ubind();
-			}
+			bloom3.bind();
+			//	glClearColor(0., 0., 0., 1.);
+			//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			q.textures.push_back(bloom2.textures[0]);
+			bloom1Shader.use();
+			bloom1Shader.setFloat("width", 2000 / 4);
+			q.drawCustom(bloom1Shader.ID);
+			q.textures.clear();
+			bloom3.ubind();
 
-		if (textures.size() > 0) {
-		//	fbo.textures[0] = textures[0].id;
+			bloom4.bind();
+			//	glClearColor(0., 0., 0., 1.);
+			//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			q.textures.push_back(bloom3.textures[0]);
+			bloom1Shader.use();
+			bloom1Shader.setFloat("width", 2000 / 4);
+			q.drawCustom(bloom1Shader.ID);
+			q.textures.clear();
+			bloom4.ubind();
 		}
 
-		
+		if (textures.size() > 0) {
+			//	fbo.textures[0] = textures[0].id;
+		}
+
+
 		glClearColor(ClearColor.x, ClearColor.y, ClearColor.z, ClearColor.a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glViewport(0, 0, width, height);
 		if (1) {
-			q.textures.push_back(  fbo.textures[0]);
+			q.textures.push_back(fbo.textures[0]);
 			q.textures.push_back(fbo2.textures[0]);
 			q.textures.push_back(bloom4.textures[0]);
 			glUseProgram(q.shaderProgram);
@@ -335,8 +338,8 @@ public:
 		}
 	}
 
-	
-	void LoadObject(int &path_count, const char* paths[]) {
+
+	void LoadObject(int& path_count, const char* paths[]) {
 		for (int i = 0; i < path_count; i++) {
 			const char* path = paths[i];
 			string fileName = Tools::getFileName(path, false);
@@ -344,28 +347,33 @@ public:
 			if (exName == "FBX" || exName == "fbx" || exName == "obj" || exName == "OBJ" || exName == "DAE" || exName == "dae")
 			{
 				const char* name = fileName.c_str();
-				
+
 				//Model model(path);
 				model = Model(path);
-				
+
 				ofstream myfile;
 				Material::Mode m = Material::Default;
 				Material def(m);
 				for (int i = 0; i < model.meshes.size(); i++) {
 					for (auto& object : objects) {
-			
+
 						if (model.names[i] == object.name) {
 							model.names[i] += "2";
 						}
 					}
 					model.names[i] = Tools::space2underscore(model.names[i]);
 					Objects object(allPrimitives.size(), model.names[i], def);
-					animations.push_back(model.sceneAnimation);
-					//adatas.push_back(model.sceneAnimation.adata);
-					object.animationID = animations.size() - 1;
+					model.sceneAnimation.name = "animation" + std::to_string(animations.size());
+
+
 					Primitives p;
 					p.mesh = model.meshes[i];
 					p.name = model.names[i];
+					if (p.mesh.hasBones) {
+						animations.push_back(model.sceneAnimation);
+						object.animationIDs.push_back(animations.size() - 1);
+					}
+
 					allPrimitives.push_back(p);
 					object.position = model.positions[i];
 					object.scale = model.scales[i];
@@ -373,43 +381,46 @@ public:
 					objects.push_back(object);
 				}
 			}
-			else if (exName == "jpg" || exName == "JPG" || exName == "png" || exName == "PNG" || 
+			else if (exName == "jpg" || exName == "JPG" || exName == "png" || exName == "PNG" ||
 				exName == "jpeg" || exName == "JPEG" || exName == "tga" || exName == "TGA" || exName == "hdr" ||
-				exName == "HDR" || exName == "bmp" || exName == "BMP") 
+				exName == "HDR" || exName == "bmp" || exName == "BMP")
 			{
 				loadTexture(path);
 			}
 			else if (exName == "sav") {
 				loadSceneData(path);
 			}
-			
+
 		}
 
 	}
-	void CustomLoad(Mesh &mesh,string name) {
+	void CustomLoad(Mesh& mesh, string name) {
 		//need to update
 		Material::Mode m = Material::Default;
 		Material def(m);
-		Objects object(0, name,def);
+		Objects object(0, name, def);
 		objects.push_back(object);
 	}
 	void loadScene(string& path) {
 		SceneLoader sceneload = SceneLoader();
 		Mesh mesh = sceneload.LoadPrimitive(path);
-		CustomLoad(mesh,"name");
+		CustomLoad(mesh, "name");
 	}
-	
-	void saveTexture(unsigned int ID,string path) {
+
+	void saveTexture(unsigned int ID, string path) {
 		SceneLoader::saveTexture(textures, ID, path);
 	}
 
-	void saveSceneData(string directoryPath,bool exportFully = false) {
-	
-		SceneLoader::saveSceneData(directoryPath, exportFully,allPrimitives,animations, objects,textures,sceneLights);
+	void saveSceneData(string directoryPath, bool exportFully = false) {
+
+		SceneLoader::saveSceneData(directoryPath, exportFully, allPrimitives, animations, objects, textures, sceneLights);
+	}
+	void saveJsScene(string directoryPath) {
+		SceneLoader::savejsPrimitive(objects,allPrimitives, directoryPath,textures);
 	}
 
 	void loadSceneData(string finalPath) {
-		SceneLoader::loadSceneData(finalPath,allPrimitives,objects,sceneLights,ObjectShader ,textures);
+		SceneLoader::loadSceneData(finalPath,allPrimitives,animations,objects,sceneLights,ObjectShader ,textures);
 	}
 
 	void loadTexture(string path) {

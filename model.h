@@ -243,8 +243,8 @@ private:
 			qrot.z = rotation.z;
 			qrot.w = rotation.w;
 			glm::vec3 rot = glm::degrees(glm::eulerAngles(qrot));
-			if (!obj) {
-				//rot.x -= 90;
+			if (obj) {
+				rot.x -= 90;
 			}
 			
 			if (std::fabs(rot.z) >= 89.99) {

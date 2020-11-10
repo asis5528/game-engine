@@ -1,7 +1,7 @@
 
 class Material {
 public:
-	enum Mode{Default,Textured, PBR,Lighting,PBR_T};
+	enum Mode{Default,Textured, PBR,Custom,Lighting,PBR_T};
 	Mode mode = Default;
 	bool bloom = false;
 	bool bloomTexture = false;
@@ -48,6 +48,9 @@ public:
 		}
 		else if (mode == PBR) {
 			shad = &shaders[2];
+		}
+		else if (mode == Custom) {
+
 		}
 		else if (mode == Lighting) {
 			shad = &shaders[3];
@@ -182,6 +185,12 @@ public:
 
 
 		}
+
+		else if (mode==Custom) {
+
+			if (ObjectTextures->size() > 0) {
+			}
+}
 	}
 
 

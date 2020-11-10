@@ -1,4 +1,4 @@
-
+#pragma once
 class SceneLoader {
 public:
 
@@ -23,7 +23,7 @@ public:
 			iff >> n;
 		
 			if (state == 1) {
-
+				std::cout << "loading vertices/n";
 				string line2;
 				std::getline(iff, line2);
 				istringstream iss(line2);
@@ -39,7 +39,7 @@ public:
 
 			}
 			else if (state == 2) {
-
+				std::cout << "loading indices/n";
 				string line2;
 				std::getline(iff, line2);
 				istringstream iss(line2);
@@ -56,6 +56,7 @@ public:
 
 			}
 			else if (state == 3) {
+				std::cout << "loading bone/n";
 				string line2;
 				std::getline(iff, line2);
 				istringstream iss(line2);
@@ -70,6 +71,7 @@ public:
 
 			}
 			else if (state == 4) {
+				std::cout << "loading bone offset matrix /n";
 				string line2;
 				std::getline(iff, line2);
 				istringstream iss(line2);
@@ -138,9 +140,10 @@ public:
 		}
 
 		float k = 1.;
-		//Mesh m = Mesh(verts, indices);
+		
 		Mesh m;
 		m.boneInfo = boneInfo;
+		m.AnimationInit(verts, indices, bones);
 		//////////Come back////////////
 		//Animation animation;
 		//loadAnimation(path, animation);
@@ -155,24 +158,49 @@ public:
 		ifstream iff(fullname);
 		string line;
 		//AnimationData adata;
-
+	
 		string parent;
 		string child;
 		//std::getline(iff, line);
 		//iff >> parent; iff >> child;
 		string j;
-		iff >> j;
+		iff >> animation.name;
 		float duration;
 		iff >> duration;
 		float tick;
 		iff >> tick;
+		unsigned int keyframeSize = 0;
+		iff >> keyframeSize;
 		unsigned int BoneIndex = 0;
+		
 		animation.duration = duration;
 		animation.ticksperSec = tick;
+		string useless;
+		iff >> useless;
+		unsigned int actionSize;
+		iff >> actionSize;
+		std::vector<AnimationAction> actions;
+		
+		for (unsigned int i = 0; i < actionSize; i++) {
+			std::cout << "lets start animation : " <<i <<"\n";
+			string name;
+			float x, y;
+			iff >> name;
+			iff >> x;
+			iff >> y;
+			AnimationAction ac;
+			ac.name = name;
+			ac.range = glm::vec2(x, y);
+			actions.push_back(ac);
+			
+		}
+		std::cout << "lets start animation" << "\n";
+		animation.actions = actions;
 		unsigned int state = 0;
 		std::vector<std::vector<AnimationTransformation>> AnimationTransformationData;
 		std::vector<AnimationTransformation> AnimT;
 		std::vector<AnimationTransformation>* AT = &AnimT;
+		
 		while (std::getline(iff, line)) {
 			
 				string firstValue;
@@ -183,7 +211,7 @@ public:
 					//state = 1;
 					
 					iff >> firstValue;
-					
+					//std::cout << "bones " << AnimationTransformationData.size() << "\n";
 					AnimationTransformationData.resize(AnimationTransformationData.size() + 1);
 					AT = &AnimationTransformationData[AnimationTransformationData.size()-1];
 					
@@ -334,6 +362,137 @@ public:
 		}
 	}
 
+
+	/////////////THIRD PARTY EXPORTER/////////////////
+	static void savejsPrimitive(vector<Objects> objects,vector<Primitives>& allPrimitives, string& path, std::vector<Texture>& textures) {
+		
+		
+		for (unsigned int i = 0; i < objects.size(); i++) {
+			ofstream myfile;
+			string finalname = path;
+			std::cout << finalname << "\n";
+			myfile.open(finalname);
+			//	myfile << "Name " << p.name << "\n";
+			//	myfile << "vertexDatas \n";
+			Objects object = objects[i];
+
+			Primitives p = allPrimitives[object.primitiveID];
+
+			myfile << "export class BooleanGameGeometry  {\n";
+			myfile << "getGeometry(decode){\n";
+			myfile << "const positions = new Float32Array([";
+			myfile << p.mesh.vertices[0].Position.x << "," << p.mesh.vertices[0].Position.y << "," << p.mesh.vertices[0].Position.z;
+			for (unsigned int i = 1; i < p.mesh.vertices.size(); i++) {
+				Vertex v = p.mesh.vertices[i];
+				myfile << "," << p.mesh.vertices[i].Position.x << "," << p.mesh.vertices[i].Position.y << "," << p.mesh.vertices[i].Position.z;
+			}
+			myfile << "]);\n";
+
+			myfile << "const uvs = new Float32Array([";
+
+			for (unsigned int i = 0; i < p.mesh.vertices.size(); i++) {
+				Vertex v = p.mesh.vertices[i];
+				myfile << p.mesh.vertices[i].TexCoords.x << "," << p.mesh.vertices[i].TexCoords.y << ",";
+			}
+			myfile << "]);\n";
+
+			myfile << "const normals = new Float32Array([";
+
+			for (unsigned int i = 0; i < p.mesh.vertices.size(); i++) {
+				Vertex v = p.mesh.vertices[i];
+				myfile << p.mesh.vertices[i].Normal.x << "," << p.mesh.vertices[i].Normal.y << "," << p.mesh.vertices[i].Normal.z << ",";
+			}
+			myfile << "]);\n";
+
+
+			//myfile << "const tData = new Uint8Array([";
+
+
+			
+
+
+
+			int numChannels = 0;
+			string tformat = "THREE.RGBFormat";
+			string boolrgba = "true";
+			if (textures[object.mat.DiffuseTextureID].format == GL_RED){
+				numChannels = 1;
+			}
+			else if (textures[object.mat.DiffuseTextureID].format == GL_RGB) {
+				boolrgba = "false";
+				numChannels = 3;
+			}
+			else if (textures[object.mat.DiffuseTextureID].format == GL_RGBA) {
+				tformat = "THREE.RGBAFormat";
+				numChannels = 4;
+			}
+				
+			const int numberOfPixels = textures[object.mat.DiffuseTextureID].width * textures[object.mat.DiffuseTextureID].height * numChannels;
+			unsigned char* pixels = new unsigned char[numberOfPixels];
+
+
+			glBindTexture(textures[object.mat.DiffuseTextureID].type, textures[object.mat.DiffuseTextureID].id);
+
+			glGetTexImage(GL_TEXTURE_2D, 0, textures[object.mat.DiffuseTextureID].format, GL_UNSIGNED_BYTE, pixels);
+			unsigned int size = sizeof(pixels);
+			for (unsigned int i = 0; i < numberOfPixels; i++) {
+				//unsigned int val = pixels[i];
+				//myfile << val << ",";
+			}
+		//	myfile << "]);\n";
+			const char* jpegFilename = (Tools::getPathName(finalname) + "//save.png").c_str();
+			stbi_write_jpg(jpegFilename, textures[object.mat.DiffuseTextureID].width, textures[object.mat.DiffuseTextureID].height, numChannels, pixels, 50);
+			std::ifstream file(jpegFilename, std::ios::binary | std::ios::ate);
+			std::streamsize bufsize = file.tellg();
+			file.seekg(0, std::ios::beg);
+			
+			std::vector<char> buffer(bufsize);
+			if (file.read(buffer.data(), bufsize))
+			{
+				/* worked! */
+			}
+			
+			file.close();
+			myfile << "var tData =new Uint8Array([";
+			//myfile << "var tData = \" ";
+			for (unsigned int i = 0; i < buffer.size(); i++) {
+				unsigned int val = (uint8_t)buffer[i];
+				myfile << val<<",";
+				 //myfile << buffer[i];
+			}
+			//myfile << "\";\n";
+				myfile << "]);\n";
+
+				myfile << "var imageData = decode(tData,{formatAsRGBA:";
+				myfile << boolrgba;
+				myfile<<"});\n";
+
+			myfile << "const texture = new THREE.DataTexture(imageData.data," << "imageData.width" << "," << "imageData.height" << ","<< tformat <<");\n";
+			myfile << "var material = new THREE.MeshBasicMaterial({ map: texture});";
+
+
+			myfile << " const indices = [";
+
+			for (auto i : p.mesh.indices) {
+				myfile << i << ",";
+			}
+			myfile << "];\n";
+			myfile << "const geometry = new THREE.BufferGeometry();\n";
+			myfile << " geometry.setAttribute('position',new THREE.BufferAttribute(positions, 3));\n";
+			myfile << " geometry.setAttribute('normal',new THREE.BufferAttribute(normals, 3));\n";
+			myfile << " geometry.setAttribute('uv',new THREE.BufferAttribute(uvs, 2));\n";
+			myfile << "geometry.setIndex(indices);\n";
+			myfile << "var mesh = new THREE.Mesh(geometry, material);";
+			myfile << "return mesh;\n";
+			myfile << "}\n";
+			myfile << "}";
+			myfile.close();
+			
+		}
+	}
+	/////////////////////////////
+
+
 	static void saveBoneListMesh(ofstream& myfile, Mesh& mesh) {
 	//	if (adata.anim) {
 		//	myfile << adata.name << " ";
@@ -352,11 +511,17 @@ public:
 	static void saveAnimation(std::vector<Animation>& animations, string& path) {
 		for (Animation& animation : animations) {
 			ofstream myfile;
-			string finalname = path + "\\" + "animtion"+ ".anibln";
+			string finalname = path + "\\" + animation.name + ".anibln";
 			std::cout << finalname << "\n";
 			myfile.open(finalname);
-			myfile << "Animation ";
-			myfile << animation.duration << " " << animation.ticksperSec << "\n";
+			myfile << animation.name<<" ";
+			myfile << animation.duration << " " << animation.ticksperSec << " " << animation.adata.childAnimationData[0].animationTransformation.size() << "\n";
+			myfile << "Actions " << animation.actions.size()<<" ";
+			
+			for (unsigned int i = 0; i < animation.actions.size(); i++) {
+				myfile << animation.actions[i].name << " " << animation.actions[i].range.x << " " << animation.actions[i].range.y << " ";
+			}
+			myfile << "\n";
 			saveBoneAnimation(myfile, animation.adata);
 			myfile << "AnimationTree" << "\n";
 			//myfile << "hehe";
@@ -371,21 +536,25 @@ public:
 
 	static void saveBoneTree(ofstream& myfile, AnimationData& adata) {
 		myfile << adata.name;
-		if (adata.name != "") {
+		if (adata.name != "" && adata.name != "Armature") {
 			myfile << " \n";
 		}
 		
 		for (int i = 0; i < adata.childAnimationData.size(); i++) {
 			if (adata.name == "") {
-				myfile << "Armature" << " ";
-			}else{
+				
+			}
+			else if (adata.name == "Armature") {
+				myfile << " ";
+			}
+			else{
 			myfile << adata.name<<" ";
 			}
 			saveBoneTree(myfile, adata.childAnimationData[i]);
 		}
 	}
 	static void saveBoneAnimation(ofstream& myfile, AnimationData& adata) {
-		if (adata.name != "") {
+		if (adata.name != "" && adata.name != "Armature") {
 			
 			myfile << "#\n";
 		}
@@ -403,7 +572,7 @@ public:
 			saveBoneAnimation(myfile, adata.childAnimationData[i]);
 		}
 	}
-	static void loadSceneData(string finalPath, std::vector<Primitives> &allPrimitives, std::vector<Objects> &objects, Lights &sceneLights, Shader &ObjectShader, std::vector<Texture>& textures) {
+	static void loadSceneData(string finalPath, std::vector<Primitives> &allPrimitives,std::vector<Animation> &animations, std::vector<Objects> &objects, Lights &sceneLights, Shader &ObjectShader, std::vector<Texture>& textures) {
 		string path = "savedData";
 
 		string directory;
@@ -445,18 +614,23 @@ public:
 				state = 1;
 
 			}
-			else if (currentData == "#textures") {
+			else if (currentData == "#animations") {
 				state = 2;
 			}
 			else if (currentData == "#lights") {
-				state = 4;
+				state = 3;
 
 			}
-			else if (currentData == "#objects") {
-				state = 3;
+			else if (currentData == "#textures") {
+				state = 4;
 			}
+			
+			else if (currentData == "#objects") {
+				state = 5;
+			}
+			
 			else if (state == 1) {
-				std::cout << directory + "\\" + currentData << "\n";
+				std::cout << "loading primitives\n";
 				string finalPathName = directory + "\\primitives" +"\\" + currentData;
 				Mesh mesh = LoadPrimitive(finalPathName);
 				Primitives prim;
@@ -465,6 +639,15 @@ public:
 				allPrimitives.push_back(prim);
 			}
 			else if (state == 2) {
+				std::cout << "loading animations \n";
+				string finalPathName = directory + "\\animations" + "\\" + currentData;
+				Animation animation;
+				loadAnimation(finalPathName, animation);
+				animations.push_back(animation);
+			}
+
+			else if (state == 4) {
+				std::cout << "loading textures \n";
 				string type = currentData;
 				string path;
 				if (type == "2D") {
@@ -479,7 +662,8 @@ public:
 				//string finalPathName = currentData;
 				
 			}
-			else if (state == 4) {
+			else if (state == 3) {
+				std::cout << "loading lights \n";
 				string name = currentData;
 				int typeIndex;
 				glm::vec3 color;
@@ -509,12 +693,15 @@ public:
 
 
 			}
-			else if (state == 3) {
+			else if (state == 5) {
+				std::cout << "scene objects";
 				string name = currentData;
 				glm::vec3 pos;
 				glm::vec3 scale;
 				glm::vec3 rotation;
 				unsigned int primitiveIndex;
+				unsigned int animationSize;
+				unsigned int animationID;
 				unsigned int textureSize;
 				std::vector<unsigned int> textureIDS;
 				unsigned int materialmodeindex;
@@ -530,8 +717,14 @@ public:
 				iss >> scale.y;
 				iss >> scale.z;
 				iss >> primitiveIndex;
+				iss >> animationSize;
+				for(unsigned int i=0;i<animationSize;i++){
+					iss >> animationID;
+				}
+				
 				primitiveIndex += primitivesize;
-				std::cout << primitiveIndex << "\n";
+				//std::cout << primitiveIndex << "\n";
+				//
 				iss >> textureSize;
 				for (int i = 0; i < textureSize; i++) {
 					unsigned int ID;
@@ -573,7 +766,7 @@ public:
 				object.rotation = rotation;
 				object.scale = scale;
 				object.textureID = textureIDS;
-
+				object.animationIDs.push_back(animationID);
 				objects.push_back(object);
 
 			}
@@ -598,10 +791,15 @@ public:
 		myfile.open(finalname);
 		myfile << "NObjects " << objects.size() << "\n";
 		myfile << "NPrimitives " << allPrimitives.size() << "\n";
+		myfile << "NAnimations " << animations.size() << "\n";
 		myfile << "NLights " << sceneLights.lights.size() << "\n";
 		myfile << "#prim\n";
 		for (auto& prim : allPrimitives) {
 			myfile << prim.name << "\n";
+		}
+		myfile << "#animations\n";
+		for (Animation& animation : animations) {
+			myfile << animation.name << "\n";
 		}
 		myfile << "#lights\n";
 		for (auto& light : sceneLights.lights) {
@@ -650,6 +848,10 @@ public:
 		myfile << "#objects\n";
 		for (auto& ob : objects) {
 			myfile << ob.name << " " << ob.position.x << " " << ob.position.y << " " << ob.position.z << " " << ob.rotation.x << " " << ob.rotation.y << " " << ob.rotation.z << " " << ob.scale.x << " " << ob.scale.y << " " << ob.scale.z << " " << ob.primitiveID << " ";
+			myfile << ob.animationIDs.size() << " ";
+			for (unsigned int animID : ob.animationIDs) {
+				myfile << animID << " ";
+			}
 			myfile << ob.textureID.size()<<" ";
 			for (unsigned int texID : ob.textureID) {
 				myfile << texID << " ";
@@ -846,10 +1048,14 @@ public:
 	static void saveTexture(std::vector<Texture>& textures,unsigned int ID, string path) {
 		string finalPath = path;
 		string ext = Tools::getExtensionName(textures[ID].path);
+
+		
+
 		if (Tools::getExtensionName(path) != ext) {
 			finalPath += "." + ext;
 		}
-		if (Tools::is_file_exist(textures[ID].path.c_str())) {
+		//if (Tools::is_file_exist(textures[ID].path.c_str())) {
+		if(false){
 			CopyFile(textures[ID].path.c_str(), finalPath.c_str(), FALSE);
 		}
 		else {
@@ -863,13 +1069,25 @@ public:
 				numChannels = 4;
 			const int numberOfPixels = textures[ID].width * textures[ID].height * numChannels;
 			unsigned char* pixels = new unsigned char[numberOfPixels];
+			
 
 			glBindTexture(textures[ID].type, textures[ID].id);
 
 			glGetTexImage(GL_TEXTURE_2D, 0, textures[ID].format, GL_UNSIGNED_BYTE, pixels);
+			
 			//string ext = Tools::getExtensionName(path);
 			std::cout << "extension: " << ext << "\n";
+			//int len;
+			//unsigned char* png =  stbi_write_png_to_mem((const unsigned char*)pixels, numChannels * textures[ID].width, textures[ID].width, textures[ID].height, numChannels, &len);
+			//png[len-1] = 0;
+			//std::vector<unsigned int> pixs;
+			//std::string st((const char*)png,len);
+			//for (unsigned int i = 0; i < len; i++) {
+			//	unsigned int k = png[i];
+			//	pixs.push_back(k);
 
+			//}
+			stbi_write_jpg((finalPath+string(".jpg")).c_str(), textures[ID].width, textures[ID].height, numChannels, pixels, 100);
 			stbi_write_png(finalPath.c_str(), textures[ID].width, textures[ID].height, numChannels, pixels, numChannels * textures[ID].width);
 		}
 	}
