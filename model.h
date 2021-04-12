@@ -207,6 +207,9 @@ private:
 			Animation animation;
 			animation.ticksperSec = m_pScene->mAnimations[0]->mTicksPerSecond;
 			animation.duration = m_pScene->mAnimations[0]->mDuration;
+			if (fileName == "FBX" || fileName == "fbx") {
+				//animation.fps = 1.0;
+			}
 			animation.adata = animData;
 			animation.initAction();
 			sceneAnimation = animation;
@@ -244,6 +247,9 @@ private:
 			qrot.w = rotation.w;
 			glm::vec3 rot = glm::degrees(glm::eulerAngles(qrot));
 			if (obj) {
+				rot.x -= 90;
+			}
+			else {
 				rot.x -= 90;
 			}
 			

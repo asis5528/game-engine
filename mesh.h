@@ -171,20 +171,31 @@ public:
 	bool hasAnimation() {
 		return this->m_hasBones;
 	}
+	void dispose() {
+		//vertices.clear();
+		//indices.clear();
+		//bones.clear();
+		glDeleteBuffers(1, &VBO);
+		glDeleteBuffers(1, &boneVBO);
+		glDeleteBuffers(1, &EBO);
+		glDeleteVertexArrays(1, &VAO);
+	}
 
 private:
 	/*  Render data  */
 	unsigned int VBO, EBO;
+	unsigned int boneVBO;
 	bool m_hasBones = false;
 	/*  Functions    */
 	// initializes all the buffer objects/arrays
 	void setupMesh()
 	{
-		unsigned int VBO1;
+		
 		// create buffers arrays
+	
 		glGenVertexArrays(1, &VAO);
 		glGenBuffers(1, &VBO);
-		glGenBuffers(1, &VBO1);
+		glGenBuffers(1, &boneVBO);
 		glGenBuffers(1, &EBO);
 		glBindVertexArray(VAO);
 		// load data into vertex buffers
@@ -216,7 +227,7 @@ private:
 		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
 		if(m_hasBones){
 			hasBones = true;
-			glBindBuffer(GL_ARRAY_BUFFER, VBO1);
+			glBindBuffer(GL_ARRAY_BUFFER, boneVBO);
 			glBufferData(GL_ARRAY_BUFFER, bones.size() * sizeof(VertexBoneData), &bones[0], GL_STATIC_DRAW);
 			glEnableVertexAttribArray(5);
 			glVertexAttribIPointer(5, 4, GL_INT, sizeof(VertexBoneData), (void*)0);

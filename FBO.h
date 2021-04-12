@@ -7,9 +7,15 @@ public:
 	unsigned int width;
 	unsigned int height;
 	unsigned int num;
-	FBO(int w, int h, const int ColorNum = 1) {
+	FBO(int w, int h, const int ColorNum = 1,bool depthOnly = false) {
 		num = ColorNum;
-		initialize(w, h, ColorNum);
+		if (depthOnly) {
+			initializeDepthOnly(w, h);
+		}
+		else {
+			initialize(w, h, ColorNum);
+		}
+		
 
 	}
 	FBO() {
@@ -59,6 +65,31 @@ public:
 		bool flag = glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE;
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	void initializeDepthOnly(int w, int h ) {
+		this->width = w;
+		this->height = h;
+		glGenFramebuffers(1, &framebuffer);
+		//GL_CHECK(glGenFramebuffers(1, &framebuffer));
+		
+		unsigned int depthMap;
+		glGenTextures(1, &depthMap);
+		glBindTexture(GL_TEXTURE_2D, depthMap);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
+			w, h, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			textures.push_back(depthMap);
+			glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+			glDrawBuffer(GL_NONE);
+			glReadBuffer(GL_NONE);
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
 	}
 	void update(int w, int h, const int ColorNum = 1) {
 		for (auto& tex : textures) {

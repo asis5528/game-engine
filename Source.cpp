@@ -24,7 +24,6 @@ using namespace std;
 #include <GLFW\glfw3native.h>
 #include <cmath>
 using namespace glm;
-
 #include "Scene.h"
 #include "Events.h"
 #include "Action.h"
@@ -73,6 +72,7 @@ Gui gui;
 bool shift = false;
 bool ctrl = false;
 bool alt = false;
+static bool mouseHovered = false;
 static void dropCallback(GLFWwindow* window, int path_count, const char* paths[]) {
 	scene.LoadObject(path_count, paths);
 }
@@ -80,6 +80,7 @@ static void dropCallback(GLFWwindow* window, int path_count, const char* paths[]
 
 int main()
 {
+	
 	// glfw: initialize and configure
 	// ------------------------------
 	glfwInit();
@@ -206,8 +207,7 @@ int main()
 			}
 			act.draw(camera);
 			act.runAction(scene);
-
-			
+			mouseHovered = ImGui::IsAnyWindowHovered();
 			///////////////////////////////////////GUI///////////////////////////////////
 			if (glfwGetTime() > 5. || 1)
 			{
@@ -216,7 +216,7 @@ int main()
 				glfwSwapBuffers(window);
 				glfwPollEvents();
 			}
-
+		
 	}
 	
 	gui.terminate();
@@ -373,8 +373,9 @@ static void mouseCallback(GLFWwindow* window, int button, int action, int mods)
 // ----------------------------------------------------------------------
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
+	if(!mouseHovered){
 	camera.ProcessMouseScroll(yoffset);
-
+	}
 }
 void pickObject(void)
 {

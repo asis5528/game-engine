@@ -45,6 +45,9 @@
     <ClCompile Include="imgui_demo.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="imgui_stdlib.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="model.h">
@@ -155,7 +158,13 @@
     <ClInclude Include="AnimationData.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="AnimationRunner.h">
+    <ClInclude Include="Animation.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_stdlib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -240,6 +249,9 @@
       <Filter>Shader</Filter>
     </None>
     <None Include="outline.vert">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Data\Shaders\RayMarching.frag">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>

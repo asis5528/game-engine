@@ -84,6 +84,7 @@ public:
 
 		if (mode == Default) {
 			shad->setVec4("objectColor", objectColor);
+			shad->setVec3("camPos", cam->Position);
 			if (bloom) {
 				shad->setBool("bloom", true);
 				if (bloomTexture) {
@@ -105,6 +106,7 @@ public:
 
 		}
 		else if (mode == Textured) {
+			shad->setVec3("camPos", cam->Position);
 			if (ObjectTextures->size() > 0) {
 				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, sceneTextures->at(ObjectTextures->at(DiffuseTextureID)).id);

@@ -47,6 +47,7 @@ public:
 	float height;
 	float x = 0.;
 	float zoomSpeed = 3.;
+	float fov = 45.0;
 		float y = 0.5;
 	//camera Perspective projection
 	glm::mat4 projMat;
@@ -99,7 +100,7 @@ public:
 	void setProjectionMatrix(int w ,int h) {
 		width = w;
 		height = h;
-		projMat = glm::perspective(45.f, (float)w / (float)h, 0.1f, 1000.0f);//projection matrix
+		projMat = glm::perspective(fov, (float)w / (float)h, 0.1f, 1000.0f);//projection matrix
 		
 		if (ortho) {
 			float ratio = Zoom;
@@ -167,7 +168,7 @@ public:
 	void ProcessMouseScroll(float yoffset)
 	{
 		
-		
+	
 		
 		if (Zoom >= 1.0f && Zoom <= 2245.0f)
 			if(alt)

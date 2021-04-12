@@ -1,154 +1,224 @@
 ﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(452,5): warning MSB8028: The intermediate directory (x64\Debug\) contains files shared from another project (Animation.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  imgui_widgets.cpp
   Source.cpp
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\shared\minwindef.h(130,1): warning C4005:  'APIENTRY': macro redefinition
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\minwindef.h(130,1): warning C4005:  'APIENTRY': macro redefinition
 C:\Users\sergio\source\repos\game engine\sources\glad\include\glad\glad.h(32): message :  see previous definition of 'APIENTRY'
 C:\Users\sergio\source\repos\game engine\shader_m.h(44,34): warning C4101:  'e': unreferenced local variable
-C:\Users\sergio\source\repos\game engine\camera.h(100,11): warning C4244:  '=': conversion from 'int' to 'float', possible loss of data
-C:\Users\sergio\source\repos\game engine\camera.h(101,12): warning C4244:  '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\sergio\source\repos\game engine\camera.h(101,11): warning C4244:  '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\sergio\source\repos\game engine\camera.h(102,12): warning C4244:  '=': conversion from 'int' to 'float', possible loss of data
 C:\Users\sergio\source\repos\game engine\camera.h(137,1): warning C4244:  '-=': conversion from 'double' to 'float', possible loss of data
 C:\Users\sergio\source\repos\game engine\camera.h(138,1): warning C4244:  '-=': conversion from 'double' to 'float', possible loss of data
-C:\Users\sergio\source\repos\game engine\camera.h(204,1): warning C4244:  '+=': conversion from 'double' to 'T', possible loss of data
-C:\Users\sergio\source\repos\game engine\camera.h(204,1): warning C4244:         with
-C:\Users\sergio\source\repos\game engine\camera.h(204,1): warning C4244:         [
-C:\Users\sergio\source\repos\game engine\camera.h(204,1): warning C4244:             T=float
-C:\Users\sergio\source\repos\game engine\camera.h(204,1): warning C4244:         ]
-C:\Users\sergio\source\repos\game engine\camera.h(205,1): warning C4244:  '-=': conversion from 'double' to 'T', possible loss of data
-C:\Users\sergio\source\repos\game engine\camera.h(205,1): warning C4244:         with
-C:\Users\sergio\source\repos\game engine\camera.h(205,1): warning C4244:         [
-C:\Users\sergio\source\repos\game engine\camera.h(205,1): warning C4244:             T=float
-C:\Users\sergio\source\repos\game engine\camera.h(205,1): warning C4244:         ]
-C:\Users\sergio\source\repos\game engine\camera.h(207,1): warning C4244:  '-=': conversion from 'double' to 'T', possible loss of data
-C:\Users\sergio\source\repos\game engine\camera.h(207,1): warning C4244:         with
-C:\Users\sergio\source\repos\game engine\camera.h(207,1): warning C4244:         [
-C:\Users\sergio\source\repos\game engine\camera.h(207,1): warning C4244:             T=float
-C:\Users\sergio\source\repos\game engine\camera.h(207,1): warning C4244:         ]
-C:\Users\sergio\source\repos\game engine\camera.h(208,1): warning C4244:  '-=': conversion from 'double' to 'T', possible loss of data
-C:\Users\sergio\source\repos\game engine\camera.h(208,1): warning C4244:         with
-C:\Users\sergio\source\repos\game engine\camera.h(208,1): warning C4244:         [
-C:\Users\sergio\source\repos\game engine\camera.h(208,1): warning C4244:             T=float
-C:\Users\sergio\source\repos\game engine\camera.h(208,1): warning C4244:         ]
-C:\Users\sergio\source\repos\game engine\camera.h(210,1): warning C4244:  '-=': conversion from 'double' to 'T', possible loss of data
-C:\Users\sergio\source\repos\game engine\camera.h(210,1): warning C4244:         with
-C:\Users\sergio\source\repos\game engine\camera.h(210,1): warning C4244:         [
-C:\Users\sergio\source\repos\game engine\camera.h(210,1): warning C4244:             T=float
-C:\Users\sergio\source\repos\game engine\camera.h(210,1): warning C4244:         ]
-C:\Users\sergio\source\repos\game engine\camera.h(252,1): warning C4305:  '=': truncation from 'double' to 'float'
-C:\Users\sergio\source\repos\game engine\camera.h(254,1): warning C4305:  '=': truncation from 'double' to 'float'
-C:\Users\sergio\source\repos\game engine\camera.h(257,31): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\sergio\source\repos\game engine\camera.h(257,24): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\sergio\source\repos\game engine\camera.h(263,1): warning C4305:  '=': truncation from 'double' to 'float'
-C:\Users\sergio\source\repos\game engine\camera.h(266,1): warning C4305:  '=': truncation from 'double' to 'float'
-C:\Users\sergio\source\repos\game engine\camera.h(269,31): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\sergio\source\repos\game engine\camera.h(269,24): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\sergio\source\repos\game engine\camera.h(278,1): warning C4305:  '=': truncation from 'double' to 'float'
-C:\Users\sergio\source\repos\game engine\camera.h(281,32): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\sergio\source\repos\game engine\camera.h(281,25): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\sergio\source\repos\game engine\mesh.h(69,1): warning C4267:  'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
-C:\Users\sergio\source\repos\game engine\mesh.h(72,1): warning C4267:  'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
-C:\Users\sergio\source\repos\game engine\Lights.h(42,1): warning C4267:  '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sergio\source\repos\game engine\camera.h(175,1): warning C4244:  '-=': conversion from 'double' to 'float', possible loss of data
+C:\Users\sergio\source\repos\game engine\camera.h(217,1): warning C4244:  '+=': conversion from 'double' to 'T', possible loss of data
+C:\Users\sergio\source\repos\game engine\camera.h(217,1): warning C4244:         with
+C:\Users\sergio\source\repos\game engine\camera.h(217,1): warning C4244:         [
+C:\Users\sergio\source\repos\game engine\camera.h(217,1): warning C4244:             T=float
+C:\Users\sergio\source\repos\game engine\camera.h(217,1): warning C4244:         ]
+C:\Users\sergio\source\repos\game engine\camera.h(218,1): warning C4244:  '-=': conversion from 'double' to 'T', possible loss of data
+C:\Users\sergio\source\repos\game engine\camera.h(218,1): warning C4244:         with
+C:\Users\sergio\source\repos\game engine\camera.h(218,1): warning C4244:         [
+C:\Users\sergio\source\repos\game engine\camera.h(218,1): warning C4244:             T=float
+C:\Users\sergio\source\repos\game engine\camera.h(218,1): warning C4244:         ]
+C:\Users\sergio\source\repos\game engine\camera.h(220,1): warning C4244:  '-=': conversion from 'double' to 'T', possible loss of data
+C:\Users\sergio\source\repos\game engine\camera.h(220,1): warning C4244:         with
+C:\Users\sergio\source\repos\game engine\camera.h(220,1): warning C4244:         [
+C:\Users\sergio\source\repos\game engine\camera.h(220,1): warning C4244:             T=float
+C:\Users\sergio\source\repos\game engine\camera.h(220,1): warning C4244:         ]
+C:\Users\sergio\source\repos\game engine\camera.h(221,1): warning C4244:  '-=': conversion from 'double' to 'T', possible loss of data
+C:\Users\sergio\source\repos\game engine\camera.h(221,1): warning C4244:         with
+C:\Users\sergio\source\repos\game engine\camera.h(221,1): warning C4244:         [
+C:\Users\sergio\source\repos\game engine\camera.h(221,1): warning C4244:             T=float
+C:\Users\sergio\source\repos\game engine\camera.h(221,1): warning C4244:         ]
+C:\Users\sergio\source\repos\game engine\camera.h(223,1): warning C4244:  '-=': conversion from 'double' to 'T', possible loss of data
+C:\Users\sergio\source\repos\game engine\camera.h(223,1): warning C4244:         with
+C:\Users\sergio\source\repos\game engine\camera.h(223,1): warning C4244:         [
+C:\Users\sergio\source\repos\game engine\camera.h(223,1): warning C4244:             T=float
+C:\Users\sergio\source\repos\game engine\camera.h(223,1): warning C4244:         ]
+C:\Users\sergio\source\repos\game engine\camera.h(265,1): warning C4305:  '=': truncation from 'double' to 'float'
+C:\Users\sergio\source\repos\game engine\camera.h(267,1): warning C4305:  '=': truncation from 'double' to 'float'
+C:\Users\sergio\source\repos\game engine\camera.h(270,31): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\sergio\source\repos\game engine\camera.h(270,24): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\sergio\source\repos\game engine\camera.h(276,1): warning C4305:  '=': truncation from 'double' to 'float'
+C:\Users\sergio\source\repos\game engine\camera.h(279,1): warning C4305:  '=': truncation from 'double' to 'float'
+C:\Users\sergio\source\repos\game engine\camera.h(282,31): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\sergio\source\repos\game engine\camera.h(282,24): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\sergio\source\repos\game engine\camera.h(291,1): warning C4305:  '=': truncation from 'double' to 'float'
+C:\Users\sergio\source\repos\game engine\camera.h(294,32): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\sergio\source\repos\game engine\camera.h(294,25): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\sergio\source\repos\game engine\Lights.h(44,1): warning C4267:  '=': conversion from 'size_t' to 'int', possible loss of data
 C:\Users\sergio\source\repos\game engine\LineRenderer.h(52,68): warning C4244:  'argument': conversion from 'int' to 'T', possible loss of data
 C:\Users\sergio\source\repos\game engine\LineRenderer.h(52,68): warning C4244:         with
 C:\Users\sergio\source\repos\game engine\LineRenderer.h(52,68): warning C4244:         [
 C:\Users\sergio\source\repos\game engine\LineRenderer.h(52,68): warning C4244:             T=float
 C:\Users\sergio\source\repos\game engine\LineRenderer.h(52,68): warning C4244:         ]
-C:\Users\sergio\source\repos\game engine\FBO.h(40,1): warning C4267:  'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
-C:\Users\sergio\source\repos\game engine\Scene.h(49,34): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\sergio\source\repos\game engine\Scene.h(49,19): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\sergio\source\repos\game engine\Scene.h(94,22): warning C4244:  'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\sergio\source\repos\game engine\Scene.h(119,1): warning C4267:  'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
-C:\Users\sergio\source\repos\game engine\Scene.h(267,29): warning C4244:  'argument': conversion from 'double' to 'GLint', possible loss of data
-C:\Users\sergio\source\repos\game engine\Scene.h(267,16): warning C4244:  'argument': conversion from 'double' to 'GLint', possible loss of data
-C:\Users\sergio\source\repos\game engine\Action.h(23,15): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\sergio\source\repos\game engine\Action.h(24,15): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\sergio\source\repos\game engine\Action.h(40,1): warning C4244:  '-=': conversion from 'double' to 'T', possible loss of data
-C:\Users\sergio\source\repos\game engine\Action.h(40,1): warning C4244:         with
-C:\Users\sergio\source\repos\game engine\Action.h(40,1): warning C4244:         [
-C:\Users\sergio\source\repos\game engine\Action.h(40,1): warning C4244:             T=float
-C:\Users\sergio\source\repos\game engine\Action.h(40,1): warning C4244:         ]
-C:\Users\sergio\source\repos\game engine\Action.h(41,1): warning C4244:  '+=': conversion from 'double' to 'T', possible loss of data
-C:\Users\sergio\source\repos\game engine\Action.h(41,1): warning C4244:         with
-C:\Users\sergio\source\repos\game engine\Action.h(41,1): warning C4244:         [
-C:\Users\sergio\source\repos\game engine\Action.h(41,1): warning C4244:             T=float
-C:\Users\sergio\source\repos\game engine\Action.h(41,1): warning C4244:         ]
-C:\Users\sergio\source\repos\game engine\Action.h(43,1): warning C4244:  '+=': conversion from 'double' to 'T', possible loss of data
-C:\Users\sergio\source\repos\game engine\Action.h(43,1): warning C4244:         with
-C:\Users\sergio\source\repos\game engine\Action.h(43,1): warning C4244:         [
-C:\Users\sergio\source\repos\game engine\Action.h(43,1): warning C4244:             T=float
-C:\Users\sergio\source\repos\game engine\Action.h(43,1): warning C4244:         ]
-C:\Users\sergio\source\repos\game engine\Action.h(44,1): warning C4244:  '+=': conversion from 'double' to 'T', possible loss of data
-C:\Users\sergio\source\repos\game engine\Action.h(44,1): warning C4244:         with
-C:\Users\sergio\source\repos\game engine\Action.h(44,1): warning C4244:         [
-C:\Users\sergio\source\repos\game engine\Action.h(44,1): warning C4244:             T=float
-C:\Users\sergio\source\repos\game engine\Action.h(44,1): warning C4244:         ]
-C:\Users\sergio\source\repos\game engine\Action.h(46,1): warning C4244:  '+=': conversion from 'double' to 'T', possible loss of data
+C:\Users\sergio\source\repos\game engine\Animation.h(154,14): warning C4244:  'initializing': conversion from 'unsigned __int64' to 'float', possible loss of data
+C:\Users\sergio\source\repos\game engine\Animation.h(190,1): warning C4267:  'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sergio\source\repos\game engine\Animation.h(199,3): warning C4018:  '<': signed/unsigned mismatch
+C:\Users\sergio\source\repos\game engine\mesh.h(160,1): warning C4267:  'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
+C:\Users\sergio\source\repos\game engine\mesh.h(163,1): warning C4267:  'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
+C:\Users\sergio\source\repos\game engine\model.h(208,52): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\sergio\source\repos\game engine\model.h(209,49): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\sergio\source\repos\game engine\model.h(280,9): warning C4101:  'n': unreferenced local variable
+C:\Users\sergio\source\repos\game engine\model.h(369,21): warning C4018:  '<': signed/unsigned mismatch
+C:\Users\sergio\source\repos\game engine\model.h(393,22): warning C4018:  '<': signed/unsigned mismatch
+C:\Users\sergio\source\repos\game engine\model.h(453,47): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\sergio\source\repos\game engine\model.h(472,21): warning C4018:  '<': signed/unsigned mismatch
+C:\Users\sergio\source\repos\game engine\model.h(490,21): warning C4018:  '<': signed/unsigned mismatch
+C:\Users\sergio\source\repos\game engine\FBO.h(57,1): warning C4267:  'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
+C:\Users\sergio\source\repos\game engine\CubeMapGenerator.h(163,26): warning C4244:  'initializing': conversion from 'double' to 'unsigned int', possible loss of data
+C:\Users\sergio\source\repos\game engine\CubeMapGenerator.h(164,27): warning C4244:  'initializing': conversion from 'double' to 'unsigned int', possible loss of data
+C:\Users\sergio\source\repos\game engine\Material.h(73,1): warning C4267:  'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sergio\source\repos\game engine\SceneLoader.h(107,1): warning C4305:  'initializing': truncation from 'double' to 'float'
+C:\Users\sergio\source\repos\game engine\SceneLoader.h(135,37): warning C4244:  '=': conversion from '_Ty' to 'unsigned int', possible loss of data
+C:\Users\sergio\source\repos\game engine\SceneLoader.h(135,37): warning C4244:         with
+C:\Users\sergio\source\repos\game engine\SceneLoader.h(135,37): warning C4244:         [
+C:\Users\sergio\source\repos\game engine\SceneLoader.h(135,37): warning C4244:             _Ty=float
+C:\Users\sergio\source\repos\game engine\SceneLoader.h(135,37): warning C4244:         ]
+C:\Users\sergio\source\repos\game engine\SceneLoader.h(136,37): warning C4244:  '=': conversion from '_Ty' to 'unsigned int', possible loss of data
+C:\Users\sergio\source\repos\game engine\SceneLoader.h(136,37): warning C4244:         with
+C:\Users\sergio\source\repos\game engine\SceneLoader.h(136,37): warning C4244:         [
+C:\Users\sergio\source\repos\game engine\SceneLoader.h(136,37): warning C4244:             _Ty=float
+C:\Users\sergio\source\repos\game engine\SceneLoader.h(136,37): warning C4244:         ]
+C:\Users\sergio\source\repos\game engine\SceneLoader.h(137,37): warning C4244:  '=': conversion from '_Ty' to 'unsigned int', possible loss of data
+C:\Users\sergio\source\repos\game engine\SceneLoader.h(137,37): warning C4244:         with
+C:\Users\sergio\source\repos\game engine\SceneLoader.h(137,37): warning C4244:         [
+C:\Users\sergio\source\repos\game engine\SceneLoader.h(137,37): warning C4244:             _Ty=float
+C:\Users\sergio\source\repos\game engine\SceneLoader.h(137,37): warning C4244:         ]
+C:\Users\sergio\source\repos\game engine\SceneLoader.h(138,37): warning C4244:  '=': conversion from '_Ty' to 'unsigned int', possible loss of data
+C:\Users\sergio\source\repos\game engine\SceneLoader.h(138,37): warning C4244:         with
+C:\Users\sergio\source\repos\game engine\SceneLoader.h(138,37): warning C4244:         [
+C:\Users\sergio\source\repos\game engine\SceneLoader.h(138,37): warning C4244:             _Ty=float
+C:\Users\sergio\source\repos\game engine\SceneLoader.h(138,37): warning C4244:         ]
+C:\Users\sergio\source\repos\game engine\SceneLoader.h(285,1): warning C4305:  'initializing': truncation from 'double' to 'float'
+C:\Users\sergio\source\repos\game engine\SceneLoader.h(447,31): warning C4018:  '<': signed/unsigned mismatch
+C:\Users\sergio\source\repos\game engine\SceneLoader.h(602,1): warning C4267:  'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\Users\sergio\source\repos\game engine\SceneLoader.h(603,1): warning C4267:  'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\Users\sergio\source\repos\game engine\SceneLoader.h(682,1): warning C4267:  'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sergio\source\repos\game engine\SceneLoader.h(746,23): warning C4018:  '<': signed/unsigned mismatch
+C:\Users\sergio\source\repos\game engine\Scene.h(107,35): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\sergio\source\repos\game engine\Scene.h(107,20): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\sergio\source\repos\game engine\Scene.h(108,37): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\sergio\source\repos\game engine\Scene.h(108,22): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\sergio\source\repos\game engine\Scene.h(109,37): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\sergio\source\repos\game engine\Scene.h(109,22): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\sergio\source\repos\game engine\Scene.h(110,37): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\sergio\source\repos\game engine\Scene.h(110,22): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\sergio\source\repos\game engine\Scene.h(111,37): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\sergio\source\repos\game engine\Scene.h(111,22): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\sergio\source\repos\game engine\Scene.h(262,1): warning C4305:  '+=': truncation from 'double' to 'float'
+C:\Users\sergio\source\repos\game engine\Scene.h(266,1): warning C4305:  'argument': truncation from 'double' to 'T'
+C:\Users\sergio\source\repos\game engine\Scene.h(266,1): warning C4305:         with
+C:\Users\sergio\source\repos\game engine\Scene.h(266,1): warning C4305:         [
+C:\Users\sergio\source\repos\game engine\Scene.h(266,1): warning C4305:             T=float
+C:\Users\sergio\source\repos\game engine\Scene.h(266,1): warning C4305:         ]
+C:\Users\sergio\source\repos\game engine\Scene.h(412,64): warning C4244:  'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Users\sergio\source\repos\game engine\Scene.h(413,65): warning C4244:  'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Users\sergio\source\repos\game engine\Scene.h(415,22): warning C4244:  'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\sergio\source\repos\game engine\Scene.h(445,1): warning C4267:  'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\Users\sergio\source\repos\game engine\Scene.h(454,1): warning C4267:  'argument': conversion from 'size_t' to '_Ty', possible loss of data
+C:\Users\sergio\source\repos\game engine\Scene.h(454,1): warning C4267:         with
+C:\Users\sergio\source\repos\game engine\Scene.h(454,1): warning C4267:         [
+C:\Users\sergio\source\repos\game engine\Scene.h(454,1): warning C4267:             _Ty=unsigned int
+C:\Users\sergio\source\repos\game engine\Scene.h(454,1): warning C4267:         ]
+C:\Users\sergio\source\repos\game engine\Scene.h(546,29): warning C4244:  'argument': conversion from 'double' to 'GLint', possible loss of data
+C:\Users\sergio\source\repos\game engine\Scene.h(546,16): warning C4244:  'argument': conversion from 'double' to 'GLint', possible loss of data
+C:\Users\sergio\source\repos\game engine\Action.h(25,15): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\sergio\source\repos\game engine\Action.h(26,15): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\sergio\source\repos\game engine\Action.h(46,1): warning C4244:  '-=': conversion from 'double' to 'T', possible loss of data
 C:\Users\sergio\source\repos\game engine\Action.h(46,1): warning C4244:         with
 C:\Users\sergio\source\repos\game engine\Action.h(46,1): warning C4244:         [
 C:\Users\sergio\source\repos\game engine\Action.h(46,1): warning C4244:             T=float
 C:\Users\sergio\source\repos\game engine\Action.h(46,1): warning C4244:         ]
-C:\Users\sergio\source\repos\game engine\Action.h(56,1): warning C4244:  '-=': conversion from 'double' to 'T', possible loss of data
-C:\Users\sergio\source\repos\game engine\Action.h(56,1): warning C4244:         with
-C:\Users\sergio\source\repos\game engine\Action.h(56,1): warning C4244:         [
-C:\Users\sergio\source\repos\game engine\Action.h(56,1): warning C4244:             T=float
-C:\Users\sergio\source\repos\game engine\Action.h(56,1): warning C4244:         ]
-C:\Users\sergio\source\repos\game engine\Action.h(57,1): warning C4244:  '+=': conversion from 'double' to 'T', possible loss of data
-C:\Users\sergio\source\repos\game engine\Action.h(57,1): warning C4244:         with
-C:\Users\sergio\source\repos\game engine\Action.h(57,1): warning C4244:         [
-C:\Users\sergio\source\repos\game engine\Action.h(57,1): warning C4244:             T=float
-C:\Users\sergio\source\repos\game engine\Action.h(57,1): warning C4244:         ]
-C:\Users\sergio\source\repos\game engine\Action.h(64,1): warning C4244:  '+=': conversion from 'double' to 'T', possible loss of data
-C:\Users\sergio\source\repos\game engine\Action.h(64,1): warning C4244:         with
-C:\Users\sergio\source\repos\game engine\Action.h(64,1): warning C4244:         [
-C:\Users\sergio\source\repos\game engine\Action.h(64,1): warning C4244:             T=float
-C:\Users\sergio\source\repos\game engine\Action.h(64,1): warning C4244:         ]
-C:\Users\sergio\source\repos\game engine\Action.h(65,1): warning C4244:  '+=': conversion from 'double' to 'T', possible loss of data
-C:\Users\sergio\source\repos\game engine\Action.h(65,1): warning C4244:         with
-C:\Users\sergio\source\repos\game engine\Action.h(65,1): warning C4244:         [
-C:\Users\sergio\source\repos\game engine\Action.h(65,1): warning C4244:             T=float
-C:\Users\sergio\source\repos\game engine\Action.h(65,1): warning C4244:         ]
+C:\Users\sergio\source\repos\game engine\Action.h(47,1): warning C4244:  '+=': conversion from 'double' to 'T', possible loss of data
+C:\Users\sergio\source\repos\game engine\Action.h(47,1): warning C4244:         with
+C:\Users\sergio\source\repos\game engine\Action.h(47,1): warning C4244:         [
+C:\Users\sergio\source\repos\game engine\Action.h(47,1): warning C4244:             T=float
+C:\Users\sergio\source\repos\game engine\Action.h(47,1): warning C4244:         ]
+C:\Users\sergio\source\repos\game engine\Action.h(49,1): warning C4244:  '+=': conversion from 'double' to 'T', possible loss of data
+C:\Users\sergio\source\repos\game engine\Action.h(49,1): warning C4244:         with
+C:\Users\sergio\source\repos\game engine\Action.h(49,1): warning C4244:         [
+C:\Users\sergio\source\repos\game engine\Action.h(49,1): warning C4244:             T=float
+C:\Users\sergio\source\repos\game engine\Action.h(49,1): warning C4244:         ]
+C:\Users\sergio\source\repos\game engine\Action.h(50,1): warning C4244:  '+=': conversion from 'double' to 'T', possible loss of data
+C:\Users\sergio\source\repos\game engine\Action.h(50,1): warning C4244:         with
+C:\Users\sergio\source\repos\game engine\Action.h(50,1): warning C4244:         [
+C:\Users\sergio\source\repos\game engine\Action.h(50,1): warning C4244:             T=float
+C:\Users\sergio\source\repos\game engine\Action.h(50,1): warning C4244:         ]
+C:\Users\sergio\source\repos\game engine\Action.h(52,1): warning C4244:  '+=': conversion from 'double' to 'T', possible loss of data
+C:\Users\sergio\source\repos\game engine\Action.h(52,1): warning C4244:         with
+C:\Users\sergio\source\repos\game engine\Action.h(52,1): warning C4244:         [
+C:\Users\sergio\source\repos\game engine\Action.h(52,1): warning C4244:             T=float
+C:\Users\sergio\source\repos\game engine\Action.h(52,1): warning C4244:         ]
+C:\Users\sergio\source\repos\game engine\Action.h(62,1): warning C4244:  '-=': conversion from 'double' to 'T', possible loss of data
+C:\Users\sergio\source\repos\game engine\Action.h(62,1): warning C4244:         with
+C:\Users\sergio\source\repos\game engine\Action.h(62,1): warning C4244:         [
+C:\Users\sergio\source\repos\game engine\Action.h(62,1): warning C4244:             T=float
+C:\Users\sergio\source\repos\game engine\Action.h(62,1): warning C4244:         ]
+C:\Users\sergio\source\repos\game engine\Action.h(63,1): warning C4244:  '+=': conversion from 'double' to 'T', possible loss of data
+C:\Users\sergio\source\repos\game engine\Action.h(63,1): warning C4244:         with
+C:\Users\sergio\source\repos\game engine\Action.h(63,1): warning C4244:         [
+C:\Users\sergio\source\repos\game engine\Action.h(63,1): warning C4244:             T=float
+C:\Users\sergio\source\repos\game engine\Action.h(63,1): warning C4244:         ]
+C:\Users\sergio\source\repos\game engine\Action.h(70,1): warning C4244:  '+=': conversion from 'double' to 'T', possible loss of data
+C:\Users\sergio\source\repos\game engine\Action.h(70,1): warning C4244:         with
+C:\Users\sergio\source\repos\game engine\Action.h(70,1): warning C4244:         [
+C:\Users\sergio\source\repos\game engine\Action.h(70,1): warning C4244:             T=float
+C:\Users\sergio\source\repos\game engine\Action.h(70,1): warning C4244:         ]
 C:\Users\sergio\source\repos\game engine\Action.h(71,1): warning C4244:  '+=': conversion from 'double' to 'T', possible loss of data
 C:\Users\sergio\source\repos\game engine\Action.h(71,1): warning C4244:         with
 C:\Users\sergio\source\repos\game engine\Action.h(71,1): warning C4244:         [
 C:\Users\sergio\source\repos\game engine\Action.h(71,1): warning C4244:             T=float
 C:\Users\sergio\source\repos\game engine\Action.h(71,1): warning C4244:         ]
-C:\Users\sergio\source\repos\game engine\Action.h(98,1): warning C4244:  '-=': conversion from 'double' to 'T', possible loss of data
-C:\Users\sergio\source\repos\game engine\Action.h(98,1): warning C4244:         with
-C:\Users\sergio\source\repos\game engine\Action.h(98,1): warning C4244:         [
-C:\Users\sergio\source\repos\game engine\Action.h(98,1): warning C4244:             T=float
-C:\Users\sergio\source\repos\game engine\Action.h(98,1): warning C4244:         ]
-C:\Users\sergio\source\repos\game engine\Action.h(106,1): warning C4244:  '-=': conversion from 'double' to 'T', possible loss of data
-C:\Users\sergio\source\repos\game engine\Action.h(106,1): warning C4244:         with
-C:\Users\sergio\source\repos\game engine\Action.h(106,1): warning C4244:         [
-C:\Users\sergio\source\repos\game engine\Action.h(106,1): warning C4244:             T=float
-C:\Users\sergio\source\repos\game engine\Action.h(106,1): warning C4244:         ]
-C:\Users\sergio\source\repos\game engine\Action.h(113,1): warning C4244:  '-=': conversion from 'double' to 'T', possible loss of data
-C:\Users\sergio\source\repos\game engine\Action.h(113,1): warning C4244:         with
-C:\Users\sergio\source\repos\game engine\Action.h(113,1): warning C4244:         [
-C:\Users\sergio\source\repos\game engine\Action.h(113,1): warning C4244:             T=float
-C:\Users\sergio\source\repos\game engine\Action.h(113,1): warning C4244:         ]
-C:\Users\sergio\source\repos\game engine\Gui.h(38,136): warning C4244:  'argument': conversion from 'Type' to 'float', possible loss of data
-C:\Users\sergio\source\repos\game engine\Gui.h(153,1): warning C4305:  'argument': truncation from 'double' to 'float'
-C:\Users\sergio\source\repos\game engine\Gui.h(154,1): warning C4305:  'argument': truncation from 'double' to 'float'
-C:\Users\sergio\source\repos\game engine\Gui.h(155,1): warning C4305:  'argument': truncation from 'double' to 'float'
-C:\Users\sergio\source\repos\game engine\Source.cpp(183,22): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\sergio\source\repos\game engine\Source.cpp(188,12): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\sergio\source\repos\game engine\Source.cpp(189,12): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\sergio\source\repos\game engine\Source.cpp(192,11): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\sergio\source\repos\game engine\Source.cpp(102,21): warning C4101:  'nrComponents': unreferenced local variable
-C:\Users\sergio\source\repos\game engine\Source.cpp(240,10): warning C4804:  '<=': unsafe use of type 'bool' in operation
-C:\Users\sergio\source\repos\game engine\Source.cpp(256,46): warning C4244:  'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\sergio\source\repos\game engine\Source.cpp(256,40): warning C4244:  'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\sergio\source\repos\game engine\Source.cpp(262,11): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\sergio\source\repos\game engine\Source.cpp(263,11): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\sergio\source\repos\game engine\Source.cpp(269,16): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\sergio\source\repos\game engine\Source.cpp(270,16): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\sergio\source\repos\game engine\Source.cpp(282,10): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\sergio\source\repos\game engine\Source.cpp(283,10): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\sergio\source\repos\game engine\Source.cpp(284,20): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\sergio\source\repos\game engine\Source.cpp(285,20): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\sergio\source\repos\game engine\Source.cpp(286,19): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\sergio\source\repos\game engine\Source.cpp(287,17): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\sergio\source\repos\game engine\Source.cpp(320,43): warning C4244:  'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\sergio\source\repos\game engine\Source.cpp(320,29): warning C4244:  'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\sergio\source\repos\game engine\Source.cpp(349,28): warning C4244:  'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\sergio\source\repos\game engine\Action.h(77,1): warning C4244:  '+=': conversion from 'double' to 'T', possible loss of data
+C:\Users\sergio\source\repos\game engine\Action.h(77,1): warning C4244:         with
+C:\Users\sergio\source\repos\game engine\Action.h(77,1): warning C4244:         [
+C:\Users\sergio\source\repos\game engine\Action.h(77,1): warning C4244:             T=float
+C:\Users\sergio\source\repos\game engine\Action.h(77,1): warning C4244:         ]
+C:\Users\sergio\source\repos\game engine\Action.h(104,1): warning C4244:  '-=': conversion from 'double' to 'T', possible loss of data
+C:\Users\sergio\source\repos\game engine\Action.h(104,1): warning C4244:         with
+C:\Users\sergio\source\repos\game engine\Action.h(104,1): warning C4244:         [
+C:\Users\sergio\source\repos\game engine\Action.h(104,1): warning C4244:             T=float
+C:\Users\sergio\source\repos\game engine\Action.h(104,1): warning C4244:         ]
+C:\Users\sergio\source\repos\game engine\Action.h(112,1): warning C4244:  '-=': conversion from 'double' to 'T', possible loss of data
+C:\Users\sergio\source\repos\game engine\Action.h(112,1): warning C4244:         with
+C:\Users\sergio\source\repos\game engine\Action.h(112,1): warning C4244:         [
+C:\Users\sergio\source\repos\game engine\Action.h(112,1): warning C4244:             T=float
+C:\Users\sergio\source\repos\game engine\Action.h(112,1): warning C4244:         ]
+C:\Users\sergio\source\repos\game engine\Action.h(119,1): warning C4244:  '-=': conversion from 'double' to 'T', possible loss of data
+C:\Users\sergio\source\repos\game engine\Action.h(119,1): warning C4244:         with
+C:\Users\sergio\source\repos\game engine\Action.h(119,1): warning C4244:         [
+C:\Users\sergio\source\repos\game engine\Action.h(119,1): warning C4244:             T=float
+C:\Users\sergio\source\repos\game engine\Action.h(119,1): warning C4244:         ]
+C:\Users\sergio\source\repos\game engine\Gui.h(449,61): warning C4042:  'index': has bad storage class
+C:\Users\sergio\source\repos\game engine\Gui.h(542,1): warning C4305:  'argument': truncation from 'double' to 'float'
+C:\Users\sergio\source\repos\game engine\Gui.h(543,1): warning C4305:  'argument': truncation from 'double' to 'float'
+C:\Users\sergio\source\repos\game engine\Gui.h(544,1): warning C4305:  'argument': truncation from 'double' to 'float'
+C:\Users\sergio\source\repos\game engine\Gui.h(577,1): warning C4305:  'argument': truncation from 'double' to 'float'
+C:\Users\sergio\source\repos\game engine\Gui.h(578,1): warning C4305:  'argument': truncation from 'double' to 'float'
+C:\Users\sergio\source\repos\game engine\Gui.h(579,1): warning C4305:  'argument': truncation from 'double' to 'float'
+C:\Users\sergio\source\repos\game engine\Source.cpp(190,23): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\sergio\source\repos\game engine\Source.cpp(195,13): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\sergio\source\repos\game engine\Source.cpp(196,13): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\sergio\source\repos\game engine\Source.cpp(199,12): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\sergio\source\repos\game engine\Source.cpp(106,21): warning C4101:  'nrComponents': unreferenced local variable
+C:\Users\sergio\source\repos\game engine\Source.cpp(256,4): warning C4804:  '<=': unsafe use of type 'bool' in operation
+C:\Users\sergio\source\repos\game engine\Source.cpp(256,17): warning C4804:  '<=': unsafe use of type 'bool' in operation
+C:\Users\sergio\source\repos\game engine\Source.cpp(282,46): warning C4244:  'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\sergio\source\repos\game engine\Source.cpp(282,40): warning C4244:  'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\sergio\source\repos\game engine\Source.cpp(288,11): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\sergio\source\repos\game engine\Source.cpp(289,11): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\sergio\source\repos\game engine\Source.cpp(295,16): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\sergio\source\repos\game engine\Source.cpp(296,16): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\sergio\source\repos\game engine\Source.cpp(308,10): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\sergio\source\repos\game engine\Source.cpp(309,10): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\sergio\source\repos\game engine\Source.cpp(310,20): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\sergio\source\repos\game engine\Source.cpp(311,20): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\sergio\source\repos\game engine\Source.cpp(312,19): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\sergio\source\repos\game engine\Source.cpp(313,17): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\sergio\source\repos\game engine\Source.cpp(346,43): warning C4244:  'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\sergio\source\repos\game engine\Source.cpp(346,29): warning C4244:  'argument': conversion from 'double' to 'float', possible loss of data
+  Generating Code...
+C:\Users\sergio\source\repos\game engine\Source.cpp(377,28): warning C4244:  'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\sergio\source\repos\game engine\SceneLoader.h(304): warning C4715:  'SceneLoader::searchNode': not all control paths return a value
 LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
   Animation.vcxproj -> C:\Users\sergio\source\repos\game engine\x64\Debug\Engine.exe

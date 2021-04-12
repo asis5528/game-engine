@@ -10,6 +10,7 @@ out vec3 normal;
 out vec3 modelMatPos;
 out vec4 viewPos;
 out vec3 weight;
+out vec4 projCoord;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
@@ -26,6 +27,7 @@ void main()
 	vec4 PosL;
 	PosL =vec4(aPos, 1.0);
 	if(hasAnimation){
+	//if(false){
 	
 		mat4 BoneTransform = boneMat[aBoneIndex[0]] * aBoneWeight[0];
 		BoneTransform += boneMat[aBoneIndex[1]] * aBoneWeight[1];
@@ -35,6 +37,6 @@ void main()
 	}else{
 	PosL =vec4(aPos, 1.0);
 	}
-
-    gl_Position = projection * view * model * PosL;
+	projCoord = projection * view * model * PosL;
+    gl_Position = projCoord;
 }

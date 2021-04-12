@@ -605,38 +605,91 @@ public:
 				if(scene.objects.size()>0){
 					Objects* ob = &scene.objects[scene.selectionIndex];
 					if(ob->animationIDs.size()>0){
-						if (ImGui::CollapsingHeader("Animation Actions")) {
+							if (ImGui::CollapsingHeader("Animation Actions")) {
+								Animation* anim = &scene.animations[ob->animationIDs[0]];
+								if(anim->actions.size()>0){
 							
-
 							
-							Animation* anim = &scene.animations[ob->animationIDs[0]];
-							float k = 0.0f;
-							float n = 12.0f;
-							//ImGui::DragFloatRange2("AnimationTime", &k, &n, 1	.0);
-							AnimationActionSelector(anim,ob);
-							if (ob->animPlay) {
-								if (ImGui::Button("pause")) {
-									ob->animPlay = false;
+								float k = 0.0f;
+								float n = 12.0f;
+								//ImGui::DragFloatRange2("AnimationTime", &k, &n, 1	.0);
+								AnimationActionSelector(anim,ob);
+								if (ob->animPlay) {
+									if (ImGui::Button("pause")) {
+										ob->animPlay = false;
+									}
 								}
-							}
-							else {
-								if (ImGui::Button("play")) {
-									ob->animPlay = true;
-								}
+								else {
+									if (ImGui::Button("play")) {
+										ob->animPlay = true;
+									}
 
-							}
-							float range = anim->actions[ob->actionIndex].range.y - anim->actions[ob->actionIndex].range.x;
-							ImGui::SliderFloat(anim->actions[ob->actionIndex].name.c_str(), &ob->animationTime,0.0, range);
-							//ImGui::DragFloat("Animation Speed", &anim->actions[ob->actionIndex].speed);
+								}
+								float range = anim->actions[ob->actionIndex].range.y - anim->actions[ob->actionIndex].range.x;
+								ImGui::SliderFloat(anim->actions[ob->actionIndex].name.c_str(), &ob->animationTime,0.0, range);
+								//ImGui::DragFloat("Animation Speed", &anim->actions[ob->actionIndex].speed);
 			
-							ImGui::SliderFloat("blend factor", &ob->blendFactor, 0.0, 1.0);
-							BlendActionSelector(anim, ob);
-							if (ImGui::CollapsingHeader("Action List")) {
+								ImGui::SliderFloat("blend factor", &ob->blendFactor, 0.0, 1.0);
+								BlendActionSelector(anim, ob);
+							
+									if (ImGui::CollapsingHeader("Action List")) {
+										for (unsigned int i = 0; i < anim->actions.size(); i++) {
+									
+											if (ImGui::CollapsingHeader((std::string("Action_") + anim->actions[i].name).c_str())) {
+												//ImGui::InputFloat("Start Keyframe", &anim->actions[i].range.x);
+												//ImGui::InputFloat("End Keyframe", &anim->actions[i].range.y);
+
+												ImGui::DragFloat(("Start Keyframe" + to_string(i)).c_str(), &anim->actions[i].range.x, 1.0, 0.0, anim->duration-1);
+												ImGui::DragFloat(("End Keyframe" + to_string(i)).c_str(), &anim->actions[i].range.y, 1.0, 1.0, anim->duration);
+												if (anim->actions[i].range.x > anim->actions[i].range.y) {
+													anim->actions[i].range.x = anim->actions[i].range.y-1;
+												}
+												
+												if (anim->actions[i].range.y< anim->actions[i].range.x) {
+													anim->actions[i].range.y+= 1.0;
+												}
+												if (anim->actions.size() > 1) {
+													if (ImGui::Button("Delete")) {
+														
+															anim->actions.erase(anim->actions.begin() + i);
+														
+
+													}
+												}
+											}
+										}
+							}
+								if (ImGui::CollapsingHeader("Add Action")) {
+									static string actionName;
+									static float x;
+									static float y;
+									ImGui::InputText("ActionName", &actionName);
+									ImGui::DragFloat("StartKeyframe", &x, 1.0, 0.0, anim->duration);
+									ImGui::DragFloat("EndKeyframe" , &y, 1.0, 0.0, anim->duration);
+									if (ImGui::Button("Add")) {
+										for (unsigned int i = 0; i < anim->actions.size(); i++) {
+											if (actionName == anim->actions[i].name) {
+												actionName += "0";
+										}
+										}
+										AnimationAction act;
+										act.name = actionName;
+										act.range = glm::vec2(x, y);
+										anim->actions.push_back(act);
+										act.speed = 1.0;
+										
+									}
+								
+								}
+								
+								/*
 								for (unsigned int i = 0; i < anim->actions.size(); i++) {
 									ImGui::DragFloat((std::string("Action_")+anim->actions[i].name).c_str(), &anim->actions[i].range.x,1.0,0.0,anim->duration*anim->fps);
 
+
 									//ImGui::DragFloatRange2(anim->actions[i].name.c_str(), &anim->actions[i].range.x,)
 								}
+								*/
 							}
 						}
 					}
@@ -700,6 +753,9 @@ public:
 			{
 				//ImGui::Begin("Objects_List");
 				int l = 0;
+				if (ImGui::Button("reset")) {
+					scene.reset();
+				}
 				for (Objects& object : scene.objects) {
 
 
@@ -728,8 +784,34 @@ public:
 
 		if (ImGui::BeginTabItem("Mesh List")) {
 			{
+				unsigned int i = 0;
 				for (Primitives& p : scene.allPrimitives) {
-					ImGui::Selectable(p.name.c_str(), false);
+					
+					if (p.change) {
+						//	a.name.resize(100);
+						string* name = &p.name;
+						//ImGui::InputText("setTheName", (char*)name->c_str(), name->capacity() + 1);
+						//ImGui::PushID(i);
+						ImGui::InputText(("name"+to_string(i)).c_str(), name);
+						//ImGui::PopID();
+					}
+					else {
+						ImGui::Selectable(p.name.c_str(), p.selected);
+					}
+
+					if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(0))
+					{
+						// Do stuff on Selectable() double click.                                                                                                                                                                                                                           
+						p.selected = !p.selected;
+					}
+
+					if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
+						p.change = true;
+					}
+					else if (!ImGui::IsItemHovered() && ImGui::IsMouseClicked(0)) {
+						p.change = false;
+					}
+					i++;
 				}
 
 			}
@@ -875,16 +957,16 @@ public:
 				 
 				 static unsigned int index = 0;
 				 chooseTexture(scene, index);
-				 if (ImGui::Button("saveSaved")) {
-					 scene.save();
-				 }
-				 if (ImGui::Button("Save Tex")) {
-					// string path = BrowseFolder("");
-					 const char* filter = _T("Image Files (*.png, *.jpg,*.jpeg, *.hdr, *.tga)\0*.png;*.jpg;*.jpeg;*.tga;*.hdr\0");
-					 string finalPath = SaveFile(filter);
-					 scene.saveTexture(index, finalPath);
-					// CopyFile()
+				
+				 if(scene.textures.size()>0){
+					 if (ImGui::Button("Save Tex")) {
+						// string path = BrowseFolder("");
+						 const char* filter = _T("Image Files (*.png, *.jpg,*.jpeg, *.hdr, *.tga)\0*.png;*.jpg;*.jpeg;*.tga;*.hdr\0");
+						 string finalPath = SaveFile(filter);
+						 scene.saveTexture(index, finalPath);
+						// CopyFile()
 
+					 }
 				 }
 			
 			}

@@ -27,8 +27,11 @@ public:
 	void initAction() {
 		AnimationAction defaultAction;
 		defaultAction.name = "defaultAction";
-		defaultAction.range = glm::vec2(0.0, duration*30);
+		defaultAction.range = glm::vec2(0.0, duration);
 		actions.push_back(defaultAction);
+		//defaultAction.name = "idle";
+		//defaultAction.range = glm::vec2(0.0, 245);
+		//actions.push_back(defaultAction);
 		/*
 		defaultAction.name = "idle";
 		defaultAction.range = glm::vec2(0.0, 35);
@@ -43,37 +46,39 @@ public:
 		defaultAction.range = glm::vec2(81, 149.0);
 		actions.push_back(defaultAction);
 		*/
-		defaultAction.name = "walk";
-		defaultAction.range = glm::vec2(259, 290.0);
-		actions.push_back(defaultAction);
-		defaultAction.name = "run";
-		defaultAction.range = glm::vec2(294, 316.0);
-		actions.push_back(defaultAction);
+		//defaultAction.name = "walk";
+		//defaultAction.range = glm::vec2(259, 290.0);
+		//actions.push_back(defaultAction);
+		//defaultAction.name = "run";
+		//defaultAction.range = glm::vec2(294, 316.0);
+		//actions.push_back(defaultAction);
 
-		defaultAction.name = "hook";
-		defaultAction.range = glm::vec2(319, 359.0);
-		actions.push_back(defaultAction);
+		//defaultAction.name = "hook";
+		//defaultAction.range = glm::vec2(319, 359.0);
+		//actions.push_back(defaultAction);
 
-		defaultAction.name = "box";
-		defaultAction.range = glm::vec2(374, 439.0);
-		actions.push_back(defaultAction);
+		//defaultAction.name = "box";
+		//defaultAction.range = glm::vec2(374, 439.0);
+		//actions.push_back(defaultAction);
 
-		defaultAction.name = "dance";
-		defaultAction.range = glm::vec2(445, 914.0);
-		actions.push_back(defaultAction);
+		//defaultAction.name = "dance";
+		//defaultAction.range = glm::vec2(445, 914.0);
+		//actions.push_back(defaultAction);
 	}
 
 	void BoneTransform(float &time,unsigned int act1Index,unsigned int act2Index,float blend) {
-		glm::mat4 identity(1.0);
-		actionIndex = act1Index;
-		blendAction = act2Index;
-		Blendfactor = blend;
-		float range = actions[actionIndex].range.y - actions[actionIndex].range.x;
-		float range2 = actions[blendAction].range.y - actions[blendAction].range.x;
-		actions[actionIndex].timer = fmod(time, range);
-		actions[blendAction].timer = fmod(time, range2);
-		info.clear();
-		readAnimation((actions[actionIndex].timer + actions[actionIndex].range.x) / fps, adata,identity);
+		if(actions.size()>0){
+			glm::mat4 identity(1.0);
+			actionIndex = act1Index;
+			blendAction = act2Index;
+			Blendfactor = blend;
+			float range = actions[actionIndex].range.y - actions[actionIndex].range.x;
+			float range2 = actions[blendAction].range.y - actions[blendAction].range.x;
+			actions[actionIndex].timer = fmod(time, range);
+			actions[blendAction].timer = fmod(time, range2);
+			info.clear();
+			readAnimation((actions[actionIndex].timer + actions[actionIndex].range.x) / fps, adata,identity);
+		}
 	}
 
 	void readAnimation(float time, AnimationData& data, const glm::mat4& Parentmatrix) {
@@ -83,7 +88,6 @@ public:
 		if (!(n2||n1)) {
 
 			float time2 = (actions[blendAction].timer + actions[blendAction].range.x) / fps;
-
 			float TicksPerSecond = (float)(ticksperSec != 0 ? ticksperSec : 25.0f);
 			//std::cout << "Time0 :" << TicksPerSecond << "\n";
 			float TimeInTicks = time * TicksPerSecond;
@@ -171,30 +175,12 @@ public:
 		q2.w = EndRotationQ.w; q2.x = EndRotationQ.x; q2.y = EndRotationQ.y; q2.z = EndRotationQ.z;
 		//std::cout << "k  " << q1.w << "\n";
 
-		aiQuaternion qa = aiQuaternion();
-		aiQuaternion qb = aiQuaternion();
-
-		qa.w = q1.w;
-		qa.x = q1.x;
-		qa.y = q1.y;
-		qa.z = q1.z;
-
-		qb.w = q2.w;
-		qb.x = q2.x;
-		qb.y = q2.y;
-		qb.z = q2.z;
-
-		aiQuaternion ou = aiQuaternion();
-		aiQuaternion::Interpolate(ou, qa, qb, Factor);
 		glm::quat fina = glm::slerp(q1, q2, Factor);
 
 		fina = glm::normalize(fina);
 		//aiQuaternion::Interpolate(Out, StartRotationQ, EndRotationQ, Factor);
 		//Out = Out.Normalize();
-		Out.w = ou.w;
-		Out.x = ou.x;
-		Out.y = ou.y;
-		Out.z = ou.z;
+		
 		Out = fina;
 	}
 

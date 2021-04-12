@@ -9,6 +9,8 @@
 #include "Tools.h"
 struct Primitives
 {
+	bool change = false;
+	bool selected = false;
 	Mesh mesh;
 	string name;
 };
@@ -20,6 +22,9 @@ struct Texture {
 	unsigned int height;
 	GLenum format = GL_RGBA;
 	string path;
+	void dispose() {
+		glDeleteTextures(1, &id);
+	}
 };
 #include "Material.h"
 #include "Objects.h"
@@ -48,6 +53,7 @@ public:
 	LineRenderer line3;
 	Lights sceneLights;
 	FBO fbo;
+	FBO depth;
 	FBO fbo2;
 	FBO bloom1;
 	FBO bloom2;
@@ -67,11 +73,13 @@ public:
 	Shader skyshader;
 	CubeMapGenerator mapgen;
 	Model model;
-
-
+	Camera depthCam = Camera(glm::vec3(0.0, 0.0, 0.0));
+	glm::mat4 oldMat = glm::mat4(1.0);
 	Scene(Camera& cam) {
 		ObjectShader = Shader("Data/Shaders/object.vert", "Data/Shaders/object.frag");
 		DefaultShader = Shader("Data/Shaders/Default.vert", "Data/Shaders/Default.frag");
+		//DefaultShader = Shader("Data/Shaders/Default.vert", "Data/Shaders/RayMarching.frag");
+		//TexturedShader = Shader("Data/Shaders/Default.vert", "Data/Shaders/Refraction.frag");
 		TexturedShader = Shader("Data/Shaders/Default.vert", "Data/Shaders/Textured.frag");
 		Shader pbr = Shader("Data/Shaders/Default.vert", "Data/Shaders/pbr.frag");
 		skyshader = Shader("Data/Shaders/skybox.vert", "Data/Shaders/skybox.frag");
@@ -81,7 +89,8 @@ public:
 		//m  = Material();
 		mapgen.init();
 		cube.init();
-
+		depthCam.setProjectionMatrix(512, 512);
+		depthCam.fov = 90;
 		pickingShader = Shader("Data/Shaders/default.vert", "Data/Shaders/picking.frag");
 		bloom1Shader = Shader("Data/Shaders/Hblur.vert", "Data/Shaders/bloom1.frag");
 		bloom2Shader = Shader("Data/Shaders/Vblur.vert", "Data/Shaders/bloom1.frag");
@@ -94,24 +103,39 @@ public:
 		camera = &cam;
 		//glDisable(GL_DEPTH_TEST);
 		fbo = FBO(1980, 1024, 2);
+		depth = FBO(1024, 1024, 1,true);
 		fbo2 = FBO(camera->width, camera->height, 1);
 		bloom1 = FBO(camera->width, camera->height, 1);
 		bloom2 = FBO(camera->width, camera->height, 1);
 		bloom3 = FBO(camera->width, camera->height, 1);
 		bloom4 = FBO(camera->width, camera->height, 1);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//	glEnable(GL_BLEND);
+	//	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+		/*
+		const char* k[3] = { "D:\\3d_Models\\cam2.dae","D:\\3d_Models\\quad.dae","D:\\3d_Models\\suzz.dae" };
+		int n = 3;
+		LoadObject(n, k);
 
-
+		
+				Texture t;
+				t.id = depth.textures[0];
+				textures.push_back(t);
+		
+		
+		objects[0].mat.objectColor.r = 0.9;
+		objects[1].textureID.push_back(0);
+		objects[1].mat.mode = static_cast<Material::Mode>( 1);
+		*/
 	}
 	Scene() {
 
 	}
 
-	void drawObjects(bool blend) {
-
-
+	void drawObjects(bool blend,Camera &cam) {
+		int i = 0;
+		static bool parent = false;
+		static float frame = 0.0;
 		for (Objects& object : objects) {
 			if (object.mat.blending == blend) {
 
@@ -121,13 +145,35 @@ public:
 				object.mat.shad->setInt("selected", 0);
 
 
-				object.sendTransforms(*camera, allPrimitives[object.primitiveID].mesh);
+				object.sendTransforms(cam, allPrimitives[object.primitiveID].mesh);
+				if(true){
+				if(i<1){
+						if(frame>1){
+							if (!parent) {
+								glm::mat4 matt = glm::inverse(objects[3].modelMatrix);
+								glm::mat4 tes(1.0);
+								glm::scale(tes,objects[3].scale);
+								oldMat = matt;
+								parent = true;
+							}
+						}
+						glm::mat4 fin =  objects[3].modelMatrix * oldMat;
+						//objects[0].modelMatrix = objects[3].modelMatrix * objects[0].modelMatrix;
+						objects[0].modelMatrix = fin * objects[0].modelMatrix;
+					}
+					i += 1;
+				}
+				
 				if (object.animationIDs.size() > 0) {
 					object.processAnimation(allPrimitives[object.primitiveID].mesh, animations[object.animationIDs[0]]);
 				}
-				object.draw(*camera, allPrimitives[object.primitiveID].mesh);
+				object.draw(cam, allPrimitives[object.primitiveID].mesh);
 			}
 		}
+		if (objects.size() > 0) {
+			frame += 1;
+		}
+		
 	}
 	void environmentMapGenerator(unsigned int ID) {
 		unsigned int tex = mapgen.generateCubeMap(512, 512, textures[ID].id);
@@ -166,43 +212,10 @@ public:
 	}
 
 
-	void save() {
-
-		Mesh m = allPrimitives[objects[selectionIndex].primitiveID].mesh;
-		ofstream myfile;
-		myfile.open("saved.txt");
-		for (int i = 0; i < m.vertices.size(); i++) {
-			myfile << "glVertex3d(" << m.vertices[i].Position.x << " ," << m.vertices[i].Position.y << ", " << m.vertices[i].Position.z << ");" << "\n";
-
-		}
-	}
-	void draw(Camera& camera) {
-		/*
-		if (textures.size() > 0) {
-			if (!mapgen.state) {
+	
 
 
-			unsigned int tex = mapgen.generateCubeMap(512, 512, textures[0].id);
-			Texture t;
-			t.id = tex;
-			t.name = "environmentTex";
-			textures.push_back(t);
-
-			unsigned int tex1 = mapgen.generateIrradianceMap();
-			Texture t1;
-			t1.id = tex1;
-			t1.name = "irradianceTex";
-			textures.push_back(t1);
-
-			unsigned int tex2 = mapgen.prefilterMapGeneration();
-			Texture t2;
-			t2.id = tex2;
-			t2.name = "prefilterTex";
-			textures.push_back(t2);
-			}
-		}
-		*/
-		fbo.bind();
+	void RenderParts(Camera &camera) {
 		glClearColor(ClearColor.x, ClearColor.y, ClearColor.z, ClearColor.w);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		if (!onlyRender) {
@@ -232,22 +245,84 @@ public:
 			glLineWidth(2.0);
 		}
 
-		skyshader.use();
-		skyshader.setMat4("projection", camera.projMat);
-		skyshader.setMat4("view", camera.GetViewMatrix());
-		if (textures.size() > 0) {
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, textures[0].id);
-			skyshader.setInt("equirectangularMap", 0);
-		}
+		//skyshader.use();
+		//skyshader.setMat4("projection", camera.projMat);
+		//skyshader.setMat4("view", camera.GetViewMatrix());
+		//if (textures.size() > 0) {
+		//	glActiveTexture(GL_TEXTURE0);
+		//	glBindTexture(GL_TEXTURE_2D, textures[0].id);
+		//	skyshader.setInt("equirectangularMap", 0);
+		//}
 		//cube.draw(skyshader);
 
-		drawObjects(false);
-		drawObjects(true);
-
+		drawObjects(false, camera);
+		drawObjects(true, camera);
+		static float k = 0;
+		if (objects.size() > 4) {
+			k += 0.1;
+			for (unsigned int i = 0; i < objects[0].boneMatrices.size(); i++) {
+				glm::mat4 sc(1.0);
+				
+				sc = glm::scale(sc, glm::vec3(0.1));
+				glm::mat4 sc1(1.0);
+				sc1 = glm::scale(sc1, objects[0].scale);
+				
+				objects[4].modelMatrix = sc1 *objects[0].boneMatrices[i]*sc;
+		
+				objects[4].draw(camera, allPrimitives[objects[4].primitiveID].mesh);
+			}
+		}
+		
 
 
 		glViewport(0, 0, width, height);
+	}
+
+	void draw(Camera& camera) {
+		/*
+		if (textures.size() > 0) {
+			if (!mapgen.state) {
+
+
+			unsigned int tex = mapgen.generateCubeMap(512, 512, textures[0].id);
+			Texture t;
+			t.id = tex;
+			t.name = "environmentTex";
+			textures.push_back(t);
+
+			unsigned int tex1 = mapgen.generateIrradianceMap();
+			Texture t1;
+			t1.id = tex1;
+			t1.name = "irradianceTex";
+			textures.push_back(t1);
+
+			unsigned int tex2 = mapgen.prefilterMapGeneration();
+			Texture t2;
+			t2.id = tex2;
+			t2.name = "prefilterTex";
+			textures.push_back(t2);
+			}
+		}
+		*/
+		depth.bind();
+		glClearColor(ClearColor.x, ClearColor.y, ClearColor.z, ClearColor.w);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		for (unsigned int i = 1; i < objects.size();i++) {
+			
+
+				objects[i].mat.set(shads, sceneLights, textures, objects[i].textureID, &depthCam);
+				objects[i].mat.start();
+				objects[i].mat.shad->setInt("selected", 0);
+				objects[i].drawDepth( allPrimitives[objects[i].primitiveID].mesh);
+			
+		}
+
+		depth.ubind();
+
+
+		
+		fbo.bind();
+		RenderParts(camera);
 
 		fbo.ubind();
 
@@ -261,13 +336,17 @@ public:
 		glClearColor(0., 0., 0., 1.);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		if (!onlyRender) {
+			
 			for (Objects& object : objects) {
 				if (object.name == objects[selectionIndex].name) {
 					object.mat.shad->use();
+					//object.sendTransforms(camera, allPrimitives[object.primitiveID].mesh);
 					object.mat.shad->setInt("selected", 1);
 					object.draw(camera, allPrimitives[object.primitiveID].mesh);
 				}
 			}
+			
+			
 		}
 		glViewport(0, 0, width, height);
 		fbo2.ubind();
@@ -342,6 +421,7 @@ public:
 	void LoadObject(int& path_count, const char* paths[]) {
 		for (int i = 0; i < path_count; i++) {
 			const char* path = paths[i];
+			std::cout << paths[i] << "\n";
 			string fileName = Tools::getFileName(path, false);
 			string exName = Tools::getExtensionName(path);
 			if (exName == "FBX" || exName == "fbx" || exName == "obj" || exName == "OBJ" || exName == "DAE" || exName == "dae")
@@ -378,6 +458,7 @@ public:
 					object.position = model.positions[i];
 					object.scale = model.scales[i];
 					object.rotation = model.rotations[i];
+					object.dimension = allPrimitives[object.primitiveID].mesh.Dimensions * object.scale;
 					objects.push_back(object);
 				}
 			}
@@ -426,6 +507,24 @@ public:
 	void loadTexture(string path) {
 		SceneLoader::loadTexture(path, textures);
 
+	}
+	void reset() {
+		//objects.clear();
+		for (unsigned int i = 0; i < textures.size(); i++) {
+			textures[i].dispose();
+		}
+		textures.clear();
+		for (unsigned int i = 0; i < allPrimitives.size(); i++) {
+			allPrimitives[i].mesh.dispose();
+		}
+	
+			adata.clear();
+		
+		
+			animations.clear();
+			objects.clear();
+		
+		
 	}
 	void pickObject() {
 		glClearColor(2.0f, 0.0f, 0.0f, 1.0f);
